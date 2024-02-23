@@ -16,7 +16,7 @@ namespace LunarLander
         private const string MESSAGE = "I wrote this amazing game";
         private const string MESSAGE2 = "C to continue, ESC to go to main menu";
         private const float RECTANGLE2_ROTATION_RATE = MathHelper.Pi / 4;  // radians per second
-
+        private Texture2D backgroundImage;
         LunarLanderLevel m_level = new LunarLanderLevel(1);
         private double positionX = 15;
         private double positionY = 50;
@@ -49,6 +49,7 @@ namespace LunarLander
         {
             m_font = contentManager.Load<SpriteFont>("Fonts/menu");
             playerTexture = contentManager.Load<Texture2D>("rocketShip");
+            backgroundImage = contentManager.Load<Texture2D>("53072881464_d0a95851f1_k");
             playerRectangle = new Rectangle(50, 50, playerTexture.Width, playerTexture.Height);
             playerX = 50f;
             playerY = 50f;
@@ -132,6 +133,11 @@ namespace LunarLander
 
         public override void render(GameTime gameTime)
         {
+
+            // Render the background:
+            m_spriteBatch.Begin();
+            m_spriteBatch.Draw(backgroundImage, new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight), Color.White);
+
             if (currentLevel == Level.LEVELONE)
             {
                 
@@ -143,7 +149,6 @@ namespace LunarLander
             if (!isPaused)
             {
                 
-                m_spriteBatch.Begin();
                 m_spriteBatch.Draw(
                     playerTexture,
                     new Rectangle((int)playerX,(int) playerY, playerRectangle.Width, playerRectangle.Height),
@@ -161,7 +166,6 @@ namespace LunarLander
             }
             else 
             {
-                m_spriteBatch.Begin();
                 Vector2 stringSize = m_font.MeasureString(MESSAGE2);
                 m_spriteBatch.DrawString(m_font, MESSAGE2,
                     new Vector2(m_graphics.PreferredBackBufferWidth / 2 - stringSize.X / 2,
