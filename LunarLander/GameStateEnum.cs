@@ -9,6 +9,7 @@ namespace LunarLander
     public enum GameStateEnum 
     { 
         MainMenu,
+        Settings,
         GamePlay,
         HighScores,
         Help,

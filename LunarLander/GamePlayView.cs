@@ -16,9 +16,26 @@ namespace LunarLander
         private const string MESSAGE = "I wrote this amazing game";
         private const string MESSAGE2 = "Paused... C to continue, ESC to go to main menu";
 
-
+        LunarLanderLevel m_level = new LunarLanderLevel(1);
         private double positionX = 15;
         private double positionY = 50;
+
+        public enum Level
+        {
+            LEVELONE,
+            LEVELTWO,
+
+            
+        }
+
+        public enum Stage
+        {
+            PLAYING,
+            COMPLETED,
+        }
+
+        private Level currentLevel = Level.LEVELONE;
+        private Stage currentStage = Stage.PLAYING;
 
         bool isPaused = false;
         public override void loadContent(ContentManager contentManager)
@@ -41,11 +58,20 @@ namespace LunarLander
 
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                positionY -= 1 * gameTime.ElapsedGameTime.TotalMilliseconds;
+                if (Keyboard.GetState().IsKeyDown(Keys.D))
+                {
+                    Console.Write("Yeah");
+                }
+                m_level.thrustVector.Y += 0.1f;
+                //positionY -= 1 * gameTime.ElapsedGameTime.TotalMilliseconds;
+            }
+            else 
+            {
+                m_level.thrustVector.Y = 0;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                positionY += 1 * gameTime.ElapsedGameTime.TotalMilliseconds;
+                //positionY += 1 * gameTime.ElapsedGameTime.TotalMilliseconds;
             }
             if (isPaused)
             {
@@ -59,11 +85,20 @@ namespace LunarLander
 
 
 
+
             return GameStateEnum.GamePlay;
         }
 
         public override void render(GameTime gameTime)
         {
+            if (currentLevel == Level.LEVELONE)
+            {
+                
+            }
+            else if (currentLevel == Level.LEVELTWO) 
+            { 
+                
+            }
             if (!isPaused)
             {
                 m_spriteBatch.Begin();
@@ -87,6 +122,18 @@ namespace LunarLander
 
         public override void update(GameTime gameTime)
         {
+
+            if (currentLevel == Level.LEVELONE && currentStage == Stage.COMPLETED)
+            {
+                currentLevel = Level.LEVELTWO;
+                currentStage = Stage.PLAYING;
+            }
+            
+            m_level.playerVectorVelocity += m_level.gravityVector;
+            m_level.playerVectorVelocity += m_level.thrustVector;
+            positionX -= m_level.playerVectorVelocity.X * gameTime.ElapsedGameTime.TotalMinutes;
+            positionY -= m_level.playerVectorVelocity.Y * gameTime.ElapsedGameTime.TotalMinutes;
+
         }
     }
 }

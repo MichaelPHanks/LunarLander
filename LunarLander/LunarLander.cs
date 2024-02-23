@@ -12,6 +12,7 @@ namespace LunarLander
         private IGameState m_currentState;
         private IGameState m_prevState;
         private Dictionary<GameStateEnum, IGameState> m_gameStates;
+        
 
         public LunarLander()
         {
@@ -27,6 +28,7 @@ namespace LunarLander
             m_gameStates.Add(GameStateEnum.About, new AboutView());
             m_gameStates.Add(GameStateEnum.MainMenu, new MainMenuView());
             m_gameStates.Add(GameStateEnum.GamePlay, new GamePlayView());
+            //m_gameStates.Add(GameStateEnum.Settings, new SettingsView());
 
             foreach (var item in m_gameStates)
             {
