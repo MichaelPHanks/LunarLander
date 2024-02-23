@@ -76,7 +76,7 @@ namespace LunarLander
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D)) 
             {
-                m_level.playerAngle += (RECTANGLE2_ROTATION_RATE * gameTime.ElapsedGameTime.TotalMilliseconds / 100.0f);
+                m_level.playerAngle += (RECTANGLE2_ROTATION_RATE * gameTime.ElapsedGameTime.TotalMilliseconds / 250.0f);
 
                 /*if (m_level.playerAngle + 90< 0)
                 {
@@ -85,7 +85,7 @@ namespace LunarLander
             }
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                m_level.playerAngle -= (RECTANGLE2_ROTATION_RATE * gameTime.ElapsedGameTime.TotalMilliseconds / 100.0f);
+                m_level.playerAngle -= (RECTANGLE2_ROTATION_RATE * gameTime.ElapsedGameTime.TotalMilliseconds / 250.0f);
 
                 /*if (m_level.playerAngle + 90> 360)
                 {
@@ -164,7 +164,7 @@ namespace LunarLander
                 m_spriteBatch.Begin();
                 Vector2 stringSize = m_font.MeasureString(MESSAGE2);
                 m_spriteBatch.DrawString(m_font, MESSAGE2,
-                    new Vector2(m_graphics.PreferredBackBufferWidth / 2 - stringSize.X - 2,
+                    new Vector2(m_graphics.PreferredBackBufferWidth / 2 - stringSize.X / 2,
                 m_graphics.PreferredBackBufferHeight / 2 - stringSize.Y), Color.White);
                 m_spriteBatch.End();
             }
