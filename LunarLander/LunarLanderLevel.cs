@@ -16,7 +16,7 @@ namespace LunarLander
         public Vector2 thrustVector;
         public Vector2 horizontalVector;
         public Vector2 playerVectorVelocity;
-        private double playerAngle;
+        public double playerAngle;
         private double playerLocation;
         private double thrust;
         private double speedVertical;
@@ -37,6 +37,7 @@ namespace LunarLander
             thrustVector = new Vector2(0f,0f);
             horizontalVector = new Vector2(0f,0f);
             playerVectorVelocity = new Vector2(0f,0f);
+            playerAngle = 0;
         }
         public void setSpeedHorizontal(double newSpeed)
         { 
