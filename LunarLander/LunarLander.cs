@@ -28,6 +28,7 @@ namespace LunarLander
             m_gameStates.Add(GameStateEnum.About, new AboutView());
             m_gameStates.Add(GameStateEnum.MainMenu, new MainMenuView());
             m_gameStates.Add(GameStateEnum.GamePlay, new GamePlayView());
+            m_gameStates.Add(GameStateEnum.Paused, new PauseView());
             //m_gameStates.Add(GameStateEnum.Settings, new SettingsView());
 
             foreach (var item in m_gameStates)

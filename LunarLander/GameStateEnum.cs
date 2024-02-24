@@ -15,6 +15,7 @@ namespace LunarLander
         Help,
         About,
         Exit,
+        Paused,
 
         
     }

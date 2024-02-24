@@ -25,7 +25,7 @@ namespace LunarLander
         float playerX;
         float playerY;
 
-        private bool isESCDown = false;
+        private bool isESCDown = true;
 
         public enum Level
         {
@@ -40,6 +40,8 @@ namespace LunarLander
             PLAYING,
             COMPLETED,
         }
+
+        
 
         private Level currentLevel = Level.LEVELONE;
         private Stage currentStage = Stage.PLAYING;
@@ -63,12 +65,12 @@ namespace LunarLander
 
             if (Keyboard.GetState().IsKeyDown(Keys.Escape) && !isESCDown)
             {
-                if (isPaused)
-                {
-                    return GameStateEnum.MainMenu;
-                }
                 isPaused = true;
                 isESCDown = true;
+
+                return GameStateEnum.Paused;
+                
+                
             }
 
             if (Keyboard.GetState().IsKeyUp(Keys.Escape))
