@@ -31,8 +31,8 @@ namespace LunarLander
         private enum MenuState
         { 
             Settings,
-            Resume,
             Help,
+            Resume,
             Menu,
             None,
         }
@@ -86,6 +86,8 @@ namespace LunarLander
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.Resume)
                 {
+                    isESCDown = true;
+
                     return GameStateEnum.GamePlay;
                 }
             }

@@ -12,6 +12,7 @@ namespace LunarLander
         private IGameState m_currentState;
         private IGameState m_prevState;
         private Dictionary<GameStateEnum, IGameState> m_gameStates;
+        private IGameState savedGamePlay;
 
 
         public LunarLander()
@@ -21,8 +22,12 @@ namespace LunarLander
             IsMouseVisible = true;
         }
 
-        protected override void Initialize()
+        protected override void Initialize()    
         {
+            /*m_graphics.IsFullScreen = true;
+            m_graphics.PreferredBackBufferWidth = 1920;
+            m_graphics.PreferredBackBufferHeight = 1080;
+            m_graphics.ApplyChanges();*/
             // TODO: Add your initialization logic here
             m_gameStates = new Dictionary<GameStateEnum, IGameState>();
             m_gameStates.Add(GameStateEnum.About, new AboutView());
@@ -62,17 +67,42 @@ namespace LunarLander
                 Exit();
             }
 
-            else 
+            else
             {
                 m_currentState.update(gameTime);
-                if (m_prevState != m_gameStates[nextStateEnum] && nextStateEnum == GameStateEnum.GamePlay)
+
+                // TODO: Need to make it so it saves the previous game state, and can resume when paused.
+                // Also so we can start a new game once we go to the main menu.
+
+                // If the previous game state we have is Main menu and the next is gameplay, make a new game
+
+                // If the previous game state is gameplay and the next is pausing, save the gameplay.
+
+                // If the previous game state is pause view, and the next is the main menu,
+                // keep the saved gameplay (should already be save anyways).
+
+                // If the saved gameplay is not null, the next game state is gameplay, and the previous game state is paused, load that gameplay
+                
+                if (m_prevState == m_gameStates[GameStateEnum.MainMenu] && nextStateEnum == GameStateEnum.GamePlay)
                 {
                     m_gameStates[nextStateEnum] = new GamePlayView();
                     m_gameStates[nextStateEnum].initialize(this.GraphicsDevice, m_graphics);
                     m_gameStates[nextStateEnum].loadContent(this.Content);
                 }
+
+                if (m_prevState == m_gameStates[GameStateEnum.GamePlay] && nextStateEnum == GameStateEnum.Paused)
+                {
+                    savedGamePlay = m_currentState;
+                }
+
+               /* if (m_prevState == m_gameStates[GameStateEnum.Paused] && nextStateEnum == GameStateEnum.GamePlay && savedGamePlay != null)
+                {
+                    m_currentState = savedGamePlay;
+                }*/
+
                 m_currentState = m_gameStates[nextStateEnum];
                 m_prevState = m_gameStates[nextStateEnum];
+
             }
 
             

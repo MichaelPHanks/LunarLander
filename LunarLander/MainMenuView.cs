@@ -190,7 +190,7 @@ namespace LunarLander
 
             m_spriteBatch.Draw(mainBackground, new Rectangle(0,0,m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight),Color.White);
 
-            float bottom = drawMenuItem(m_fontMenu, "LUNAR LANDER", 100, Color.White);
+            float bottom = drawMenuItem(m_fontMenu, "LUNAR LANDER", m_graphics.PreferredBackBufferHeight / 4, Color.White);
              bottom = drawMenuItem(m_currentSelection == MenuState.NewGame ? m_fontMenuSelect: m_fontMenu, "New Game", bottom, m_currentSelection == MenuState.NewGame ? Color.White:Color.Yellow);
             
             bottom = drawMenuItem(m_currentSelection == MenuState.HighScores ? m_fontMenuSelect : m_fontMenu, "High Scores", bottom, m_currentSelection == MenuState.HighScores ? Color.White : Color.Yellow);

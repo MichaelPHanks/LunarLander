@@ -148,7 +148,7 @@ namespace LunarLander
             { 
                 
             }
-            if (!isPaused)
+            /*if (!isPaused)
             {
                 
                 m_spriteBatch.Draw(
@@ -160,10 +160,10 @@ namespace LunarLander
                     new Vector2(playerRectangle.Width / 2, playerRectangle.Height / 2),
                     SpriteEffects.None,
                     0);
-               /* Vector2 stringSize = m_font.MeasureString(MESSAGE);
+               *//* Vector2 stringSize = m_font.MeasureString(MESSAGE);
                 m_spriteBatch.DrawString(m_font, MESSAGE,
                     new Vector2((int)positionX,
-                    (int)positionY), Color.White);*/
+                    (int)positionY), Color.White);*//*
             }
             else 
             {
@@ -171,11 +171,19 @@ namespace LunarLander
                 m_spriteBatch.DrawString(m_font, MESSAGE2,
                     new Vector2(m_graphics.PreferredBackBufferWidth / 2 - stringSize.X / 2,
                 m_graphics.PreferredBackBufferHeight / 2 - stringSize.Y), Color.White);
-            }
+            }*/
 
 
             // Render the fuel, speed, and angle.
-
+            m_spriteBatch.Draw(
+                    playerTexture,
+                    new Rectangle((int)playerX, (int)playerY, playerRectangle.Width, playerRectangle.Height),
+                    null, // Drawing the whole texture, not a part
+                    Color.White,
+                    (float)m_level.playerAngle,
+                    new Vector2(playerRectangle.Width / 2, playerRectangle.Height / 2),
+                    SpriteEffects.None,
+                    0);
             Vector2 stringSize1 = m_font.MeasureString("Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s");
             m_spriteBatch.DrawString(m_font, "Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s",
                 new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
