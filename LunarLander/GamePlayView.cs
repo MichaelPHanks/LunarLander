@@ -24,7 +24,7 @@ namespace LunarLander
         private Rectangle playerRectangle;
         float playerX;
         float playerY;
-
+        double playerFuel = 20d;
         private bool isESCDown = true;
 
         public enum Level
@@ -98,14 +98,14 @@ namespace LunarLander
 
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.D))
+
+
+                if (playerFuel > 0)
                 {
-                    Console.Write("Yeah");
+                    m_level.thrustVector.X += (float)Math.Cos(m_level.playerAngle - Math.PI / 2);
+                    m_level.thrustVector.Y -= (float)Math.Sin(m_level.playerAngle - Math.PI / 2);
+                    playerFuel -= 0.002 * gameTime.ElapsedGameTime.TotalMilliseconds;
                 }
-
-
-                m_level.thrustVector.X += (float)Math.Cos(m_level.playerAngle - Math.PI / 2);
-                m_level.thrustVector.Y -= (float)Math.Sin(m_level.playerAngle - Math.PI / 2);
                 //positionY -= 1 * gameTime.ElapsedGameTime.TotalMilliseconds;
             }
             else 
@@ -164,7 +164,6 @@ namespace LunarLander
                 m_spriteBatch.DrawString(m_font, MESSAGE,
                     new Vector2((int)positionX,
                     (int)positionY), Color.White);*/
-                m_spriteBatch.End();
             }
             else 
             {
@@ -172,8 +171,29 @@ namespace LunarLander
                 m_spriteBatch.DrawString(m_font, MESSAGE2,
                     new Vector2(m_graphics.PreferredBackBufferWidth / 2 - stringSize.X / 2,
                 m_graphics.PreferredBackBufferHeight / 2 - stringSize.Y), Color.White);
-                m_spriteBatch.End();
             }
+
+
+            // Render the fuel, speed, and angle.
+
+            Vector2 stringSize1 = m_font.MeasureString("Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s");
+            m_spriteBatch.DrawString(m_font, "Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s",
+                new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
+            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y), Color.White);
+
+
+             stringSize1 = m_font.MeasureString("Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s");
+            m_spriteBatch.DrawString(m_font, "Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s",
+                new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
+            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + stringSize1.Y), Color.White);
+
+
+             stringSize1 = m_font.MeasureString("Angle  : " + m_level.playerAngle + "");
+            m_spriteBatch.DrawString(m_font, "Angle  : " + m_level.playerAngle + "",
+                new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
+            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + 2*stringSize1.Y), Color.White);
+
+            m_spriteBatch.End();
 
         }
 

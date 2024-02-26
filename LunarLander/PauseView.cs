@@ -21,8 +21,10 @@ namespace LunarLander
         private Rectangle settings = new Rectangle();
         private Rectangle resume = new Rectangle();
         private Rectangle help = new Rectangle();
+        private Rectangle menu = new Rectangle();
         private bool m_waitForKeyRelease = false;
         SoundEffectInstance soundInstance;
+        
 
 
 
@@ -31,6 +33,7 @@ namespace LunarLander
             Settings,
             Resume,
             Help,
+            Menu,
             None,
         }
         private MenuState m_currentSelection = MenuState.Settings; 
@@ -92,7 +95,7 @@ namespace LunarLander
             }
 
 
-
+            
             if (settings.Contains(Mouse.GetState().Position))
             {
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed)
@@ -121,15 +124,28 @@ namespace LunarLander
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                 {
                     m_currentSelection = MenuState.None;
+                    isESCDown = true;
 
                     return GameStateEnum.GamePlay;
                 }
                 m_currentSelection = MenuState.Resume;
 
             }
-            
+            else if (menu.Contains(Mouse.GetState().Position))
+            {
+                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                {
+                    m_currentSelection = MenuState.None;
+                    isESCDown = true;
 
-            
+                    return GameStateEnum.MainMenu;
+                }
+                m_currentSelection = MenuState.Menu;
+
+            }
+
+
+
             /*else 
             {
                 m_currentSelection = MenuState.None;
@@ -159,6 +175,8 @@ namespace LunarLander
 
             bottom = drawMenuItem(m_currentSelection == MenuState.Help ? m_fontMenuSelect : m_fontMenu, "Help", bottom, m_currentSelection == MenuState.Help ? Color.White : Color.Yellow);
             bottom = drawMenuItem(m_currentSelection == MenuState.Resume ? m_fontMenuSelect : m_fontMenu, "Resume", bottom, m_currentSelection == MenuState.Resume ? Color.White : Color.Yellow);
+            bottom = drawMenuItem(m_currentSelection == MenuState.Menu ? m_fontMenuSelect : m_fontMenu, "Main Menu", bottom, m_currentSelection == MenuState.Menu ? Color.White : Color.Yellow);
+
             m_spriteBatch.End();
         }
 
@@ -182,7 +200,13 @@ namespace LunarLander
                 help = new Rectangle((int)m_graphics.PreferredBackBufferWidth / 2 - (int)stringSize.X / 2, (int)y, (int)stringSize.X, (int)stringSize.Y);
 
             }
-            
+            if (text == "Main Menu")
+            {
+                menu = new Rectangle((int)m_graphics.PreferredBackBufferWidth / 2 - (int)stringSize.X / 2, (int)y, (int)stringSize.X, (int)stringSize.Y);
+
+
+            }
+
             return y + stringSize.Y;
         }
 

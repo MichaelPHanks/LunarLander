@@ -29,6 +29,7 @@ namespace LunarLander
         TimeSpan hoverTimer;
         TimeSpan hoverZero;
         SoundEffectInstance soundInstance;
+        public bool canUseMouse = false;
 
         private enum MenuState
         {
@@ -97,62 +98,70 @@ namespace LunarLander
             }
 
 
-
-            if (gameplay.Contains(Mouse.GetState().Position))
+            if (canUseMouse)
             {
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed) 
+                if (gameplay.Contains(Mouse.GetState().Position))
                 {
-                    m_currentSelection = MenuState.None;
-                    return GameStateEnum.GamePlay;
-                }
-                m_currentSelection = MenuState.NewGame;
-                
-                
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        m_currentSelection = MenuState.None;
+                        canUseMouse = false;
 
-            }
-            else if (help.Contains(Mouse.GetState().Position))
-            {
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                        return GameStateEnum.GamePlay;
+                    }
+                    m_currentSelection = MenuState.NewGame;
+
+
+
+                }
+                else if (help.Contains(Mouse.GetState().Position))
                 {
-                    m_currentSelection = MenuState.None;
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        m_currentSelection = MenuState.None;
+                        canUseMouse = false;
 
-                    return GameStateEnum.Help;
+                        return GameStateEnum.Help;
+                    }
+                    m_currentSelection = MenuState.Help;
+
                 }
-                m_currentSelection = MenuState.Help;
-                
-            }
-            else if (about.Contains(Mouse.GetState().Position))
-            {
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                else if (about.Contains(Mouse.GetState().Position))
                 {
-                    m_currentSelection = MenuState.None;
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        m_currentSelection = MenuState.None;
+                        canUseMouse = false;
 
-                    return GameStateEnum.About;
+                        return GameStateEnum.About;
+                    }
+                    m_currentSelection = MenuState.About;
+
                 }
-                m_currentSelection = MenuState.About;
-                
-            }
-            else if (highScores.Contains(Mouse.GetState().Position))
-            {
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                else if (highScores.Contains(Mouse.GetState().Position))
                 {
-                    m_currentSelection = MenuState.None;
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        m_currentSelection = MenuState.None;
+                        canUseMouse = false;
 
-                    return GameStateEnum.HighScores;
+                        return GameStateEnum.HighScores;
+                    }
+                    m_currentSelection = MenuState.HighScores;
+
                 }
-                m_currentSelection = MenuState.HighScores;
-                
-            }
-            else if (quit.Contains(Mouse.GetState().Position))
-            {
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                else if (quit.Contains(Mouse.GetState().Position))
                 {
-                    m_currentSelection = MenuState.None;
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        m_currentSelection = MenuState.None;
+                        canUseMouse = false;
 
-                    return GameStateEnum.Exit;
+                        return GameStateEnum.Exit;
+                    }
+                    m_currentSelection = MenuState.Quit;
+
                 }
-                m_currentSelection = MenuState.Quit;
-                
             }
             /*else 
             {
@@ -226,6 +235,10 @@ namespace LunarLander
 
         public override void update(GameTime gameTime)
         {
+            if (Mouse.GetState().LeftButton == ButtonState.Released)
+            {
+                canUseMouse = true;
+            }
             
         }
     }

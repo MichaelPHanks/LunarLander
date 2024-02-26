@@ -11,28 +11,27 @@ namespace LunarLander
     public class SettingsView : GameStateView
     {
 
+
+
         
         
 
         
         public override void loadContent(ContentManager contentManager)
         {
-            throw new NotImplementedException();
         }
 
         public override GameStateEnum processInput(GameTime gameTime)
         {
-            throw new NotImplementedException();
+            return GameStateEnum.Settings;
         }
 
         public override void render(GameTime gameTime)
         {
-            throw new NotImplementedException();
         }
 
         public override void update(GameTime gameTime)
         {
-            throw new NotImplementedException();
         }
     }
 }
