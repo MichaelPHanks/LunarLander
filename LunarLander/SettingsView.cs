@@ -29,10 +29,11 @@ namespace LunarLander
         private Rectangle Right = new Rectangle();
         private Texture2D behindSquare;
         private enum KeySelection
-        { 
+        {
+            Up,
             Left,
             Right,
-            Up,
+            
             None,
         }
         private KeySelection m_currentSelection = KeySelection.None;
@@ -54,28 +55,6 @@ namespace LunarLander
 
             if (!m_waitForKeyRelease)
             {
-
-                if (isKeySelected)
-                {
-                    Keys[] keys = Keyboard.GetState().GetPressedKeys();
-                    if (keys.Length > 0) 
-                    {
-                        if (m_currentSelection == KeySelection.Left)
-                        {
-                            left = keys[0];
-                        }
-                        else if (m_currentSelection == KeySelection.Up)
-                        {
-                            up = keys[0];
-                        }
-                        else if (m_currentSelection == KeySelection.Right)
-                        {
-                            right = keys[0];
-                        }
-
-                        isKeySelected = false;
-                    }
-                }
                 if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 {
 
@@ -90,6 +69,32 @@ namespace LunarLander
                         return prevState;
                     }
                 }
+
+                if (isKeySelected)
+                {
+                    Keys[] keys = Keyboard.GetState().GetPressedKeys();
+                    if (keys.Length > 0) 
+                    {
+                        if (keys[0] != Keys.Escape)
+                        {
+                            if (m_currentSelection == KeySelection.Left)
+                            {
+                                left = keys[0];
+                            }
+                            else if (m_currentSelection == KeySelection.Up)
+                            {
+                                up = keys[0];
+                            }
+                            else if (m_currentSelection == KeySelection.Right)
+                            {
+                                right = keys[0];
+                            }
+                        }
+
+                        isKeySelected = false;
+                    }
+                }
+                
                 if (Keyboard.GetState().IsKeyDown(Keys.Down))
                 {
                     m_currentSelection++;
@@ -179,10 +184,10 @@ namespace LunarLander
 
             // Display the current Keys and their buttons...
             float bottom = drawMenuItem(m_fontMenu, "Settings", 100, Color.White, false);
-            bottom = drawMenuItem(m_fontMenu, "Up:    " + up.ToString(), bottom, Color.White, m_currentSelection == KeySelection.Up);
+            bottom = drawMenuItem(m_fontMenu, "Thrust     : " + up.ToString(), bottom, Color.White, m_currentSelection == KeySelection.Up);
 
-            bottom = drawMenuItem( m_fontMenu, "Left:  " + left.ToString(), bottom, Color.White, m_currentSelection == KeySelection.Left);
-            bottom = drawMenuItem(m_fontMenu, "Right: " + right.ToString(), bottom, Color.White, m_currentSelection == KeySelection.Right);
+            bottom = drawMenuItem( m_fontMenu, "Rotate Left: " + left.ToString(), bottom, Color.White, m_currentSelection == KeySelection.Left);
+            bottom = drawMenuItem(m_fontMenu, "Rotate Right: " + right.ToString(), bottom, Color.White, m_currentSelection == KeySelection.Right);
             m_spriteBatch.End();
 
         }
@@ -194,26 +199,28 @@ namespace LunarLander
             Vector2 stringSize = font.MeasureString(text);
             m_spriteBatch.DrawString(font, text, new Vector2(m_graphics.PreferredBackBufferWidth / 2 - stringSize.X / 2, y), color);
             
-            if (text == "Up:    " + up.ToString())
+            if (text == "Thrust     : " + up.ToString())
             {
-                Up = new Rectangle((int)m_graphics.PreferredBackBufferWidth / 2 - (int)stringSize.X / 2, (int)y, (int)stringSize.X, (int)stringSize.Y);
+                Up = new Rectangle(((int)m_graphics.PreferredBackBufferWidth / 2 - (int)stringSize.X / 2) - 10, (int)y, (int)stringSize.X + 20, (int)stringSize.Y);
                 if (outline && isKeySelected)
+                    if (outline && isKeySelected)
                 {
                     m_spriteBatch.Draw(behindSquare, Up,Color.White);
                 }
             }
-            if (text == "Left:  " + left.ToString())
+            if (text == "Rotate Left: " + left.ToString())
             {
-                Left = new Rectangle((int)m_graphics.PreferredBackBufferWidth / 2 - (int)stringSize.X / 2, (int)y, (int)stringSize.X, (int)stringSize.Y);
+                Left = new Rectangle(((int)m_graphics.PreferredBackBufferWidth / 2 - (int)stringSize.X / 2) - 10, (int)y, (int)stringSize.X + 20, (int)stringSize.Y);
                 if (outline && isKeySelected)
+                    if (outline && isKeySelected)
                 {
                     m_spriteBatch.Draw(behindSquare, Left, Color.White);
 
                 }
             }
-            if (text == "Right: " + right.ToString())
+            if (text == "Rotate Right: " + right.ToString())
             {
-                Right = new Rectangle((int)m_graphics.PreferredBackBufferWidth / 2 - (int)stringSize.X / 2, (int)y, (int)stringSize.X, (int)stringSize.Y);
+                Right = new Rectangle(((int)m_graphics.PreferredBackBufferWidth / 2 - (int)stringSize.X / 2) - 10, (int)y , (int)stringSize.X + 20, (int)stringSize.Y);
                 if (outline && isKeySelected)
                 {
                     m_spriteBatch.Draw(behindSquare, Right, Color.White);
