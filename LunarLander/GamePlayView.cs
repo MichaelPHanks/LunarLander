@@ -276,6 +276,7 @@ namespace LunarLander
             currentLevel = Level.LEVELONE;
             currentStage = Stage.PLAYING;
             m_level = new LunarLanderLevel(1);
+            playerFuel = 20d;
 
     }
     }
