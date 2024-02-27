@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using LunarLander.InputHandling;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
@@ -13,6 +14,12 @@ namespace LunarLander
         private IGameState m_prevState;
         private Dictionary<GameStateEnum, IGameState> m_gameStates;
         private IGameState savedGamePlay;
+        private Keys up;
+        private Keys right;
+        private Keys left;
+        private SettingsView m_settings;
+        private GamePlayView m_gamePlayView;
+        private GameStateEnum m_gameState;
 
 
         public LunarLander()
@@ -29,12 +36,14 @@ namespace LunarLander
             m_graphics.PreferredBackBufferHeight = 1080;
             m_graphics.ApplyChanges();*/
             // TODO: Add your initialization logic here
+            m_settings = new SettingsView();
+            m_gamePlayView = new GamePlayView();
             m_gameStates = new Dictionary<GameStateEnum, IGameState>();
             m_gameStates.Add(GameStateEnum.About, new AboutView());
             m_gameStates.Add(GameStateEnum.MainMenu, new MainMenuView());
-            m_gameStates.Add(GameStateEnum.GamePlay, new GamePlayView());
+            m_gameStates.Add(GameStateEnum.GamePlay, m_gamePlayView);
             m_gameStates.Add(GameStateEnum.Paused, new PauseView());
-            m_gameStates.Add(GameStateEnum.Settings, new SettingsView());
+            m_gameStates.Add(GameStateEnum.Settings, m_settings);
 
             foreach (var item in m_gameStates)
             {
@@ -43,6 +52,11 @@ namespace LunarLander
 
             m_currentState = m_gameStates[GameStateEnum.MainMenu];
             m_prevState = m_gameStates[GameStateEnum.MainMenu];
+            m_gameState = GameStateEnum.MainMenu;
+            up = Keys.W;
+            right = Keys.D;
+            left = Keys.A;
+            
             base.Initialize();
         }
 
@@ -61,7 +75,7 @@ namespace LunarLander
         protected override void Update(GameTime gameTime)
         {
             GameStateEnum nextStateEnum = m_currentState.processInput(gameTime);
-
+            
             if (nextStateEnum == GameStateEnum.Exit)
             {
                 Exit();
@@ -85,9 +99,8 @@ namespace LunarLander
                 
                 if (m_prevState == m_gameStates[GameStateEnum.MainMenu] && nextStateEnum == GameStateEnum.GamePlay)
                 {
-                    m_gameStates[nextStateEnum] = new GamePlayView();
-                    m_gameStates[nextStateEnum].initialize(this.GraphicsDevice, m_graphics);
-                    m_gameStates[nextStateEnum].loadContent(this.Content);
+                    m_gamePlayView.resetGameplay();
+                    
                 }
 
                 if (m_prevState == m_gameStates[GameStateEnum.GamePlay] && nextStateEnum == GameStateEnum.Paused)
@@ -95,6 +108,37 @@ namespace LunarLander
                     savedGamePlay = m_currentState;
                 }
 
+
+                // If the previous game state is settings, we need to check for differences in the keys used for gameplay.
+
+                if (m_prevState == m_gameStates[GameStateEnum.Settings])
+                {
+                    if (m_settings.up != up)
+                    {
+                        m_gamePlayView.ModifyKey(KeyEnum.Up,m_settings.up);
+                        up = m_settings.up;
+                    }
+                    if (m_settings.left != left)
+                    {
+                        m_gamePlayView.ModifyKey(KeyEnum.Left, m_settings.left);
+                        left = m_settings.left;
+                    }
+                    if (m_settings.right != right)
+                    {
+                        m_gamePlayView.ModifyKey(KeyEnum.Right, m_settings.right);
+                        right = m_settings.right;
+                    }
+
+                }
+
+                if (nextStateEnum == GameStateEnum.Settings && m_gameState != GameStateEnum.Settings)
+                {
+                    
+                        m_settings.prevState =m_gameState;
+
+                    
+                }
+                
                /* if (m_prevState == m_gameStates[GameStateEnum.Paused] && nextStateEnum == GameStateEnum.GamePlay && savedGamePlay != null)
                 {
                     m_currentState = savedGamePlay;
@@ -102,6 +146,7 @@ namespace LunarLander
 
                 m_currentState = m_gameStates[nextStateEnum];
                 m_prevState = m_gameStates[nextStateEnum];
+                m_gameState = nextStateEnum;
 
             }
 

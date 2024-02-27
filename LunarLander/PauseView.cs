@@ -103,6 +103,8 @@ namespace LunarLander
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                 {
                     m_currentSelection = MenuState.None;
+                    isESCDown = true;
+
                     return GameStateEnum.Settings;
                 }
                 m_currentSelection = MenuState.Settings;
@@ -115,6 +117,7 @@ namespace LunarLander
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                 {
                     m_currentSelection = MenuState.None;
+                    isESCDown = true;
 
                     return GameStateEnum.Help;
                 }

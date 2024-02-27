@@ -82,5 +82,13 @@ namespace LunarLander.InputHandling
         {
             return (Keyboard.GetState().IsKeyDown(key) && !m_statePrevious.IsKeyDown(key));
         }
+
+        public void removeKey(Keys key)
+        { 
+            if (m_commandEntries.ContainsKey(key))
+            {
+                m_commandEntries.Remove(key);
+            }
+        }
     }
 }
