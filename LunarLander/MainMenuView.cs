@@ -19,6 +19,7 @@ namespace LunarLander
         private Texture2D mainBackground;
         private SpriteFont m_fontMenu;
         private SpriteFont m_fontMenuSelect;
+        private SpriteFont m_fontTitle;
         private Rectangle gameplay = new Rectangle();
         private Rectangle about = new Rectangle();
         private Rectangle quit = new Rectangle();
@@ -52,7 +53,7 @@ namespace LunarLander
             m_fontMenuSelect = contentManager.Load<SpriteFont>("Fonts/menu-selected");
             hover = contentManager.Load<SoundEffect>("hoverSoundEffect");
             mainBackground = contentManager.Load<Texture2D>("flbb_3udr_220615");
-
+            m_fontTitle = contentManager.Load<SpriteFont>("Fonts/mainmenuTitle");
             soundInstance = hover.CreateInstance();
 
 
@@ -205,16 +206,16 @@ namespace LunarLander
 
             m_spriteBatch.Draw(mainBackground, new Rectangle(0,0,m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight),Color.White);
 
-            float bottom = drawMenuItem(m_fontMenu, "LUNAR LANDER", m_graphics.PreferredBackBufferHeight / 4, Color.White);
-             bottom = drawMenuItem(m_currentSelection == MenuState.NewGame ? m_fontMenuSelect: m_fontMenu, "New Game", bottom, m_currentSelection == MenuState.NewGame ? Color.White:Color.Yellow);
+            float bottom = drawMenuItem(m_fontTitle, "LUNAR LANDER", m_graphics.PreferredBackBufferHeight / 4, Color.OrangeRed);
+             bottom = drawMenuItem(m_currentSelection == MenuState.NewGame ? m_fontMenuSelect: m_fontMenu, "New Game", bottom, m_currentSelection == MenuState.NewGame ? Color.White:Color.LightGray);
             
-            bottom = drawMenuItem(m_currentSelection == MenuState.HighScores ? m_fontMenuSelect : m_fontMenu, "High Scores", bottom, m_currentSelection == MenuState.HighScores ? Color.White : Color.Yellow);
+            bottom = drawMenuItem(m_currentSelection == MenuState.HighScores ? m_fontMenuSelect : m_fontMenu, "High Scores", bottom, m_currentSelection == MenuState.HighScores ? Color.White : Color.LightGray);
             
-            bottom = drawMenuItem(m_currentSelection == MenuState.Help ? m_fontMenuSelect : m_fontMenu, "Help", bottom, m_currentSelection == MenuState.Help ? Color.White : Color.Yellow);
-            bottom = drawMenuItem(m_currentSelection == MenuState.Settings ? m_fontMenuSelect : m_fontMenu, "Settings", bottom, m_currentSelection == MenuState.Settings ? Color.White : Color.Yellow);
+            bottom = drawMenuItem(m_currentSelection == MenuState.Help ? m_fontMenuSelect : m_fontMenu, "Help", bottom, m_currentSelection == MenuState.Help ? Color.White : Color.LightGray);
+            bottom = drawMenuItem(m_currentSelection == MenuState.Settings ? m_fontMenuSelect : m_fontMenu, "Settings", bottom, m_currentSelection == MenuState.Settings ? Color.White : Color.LightGray);
 
-            bottom = drawMenuItem(m_currentSelection == MenuState.About ? m_fontMenuSelect : m_fontMenu, "About", bottom, m_currentSelection == MenuState.About ? Color.White : Color.Yellow);
-            drawMenuItem(m_currentSelection == MenuState.Quit ? m_fontMenuSelect : m_fontMenu, "Quit", bottom, m_currentSelection == MenuState.Quit ? Color.White : Color.Yellow);
+            bottom = drawMenuItem(m_currentSelection == MenuState.About ? m_fontMenuSelect : m_fontMenu, "About", bottom, m_currentSelection == MenuState.About ? Color.White : Color.LightGray);
+            drawMenuItem(m_currentSelection == MenuState.Quit ? m_fontMenuSelect : m_fontMenu, "Quit", bottom, m_currentSelection == MenuState.Quit ? Color.White : Color.LightGray);
             m_spriteBatch.End();
 
         }

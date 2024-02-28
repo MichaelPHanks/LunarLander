@@ -32,6 +32,8 @@ namespace LunarLander
         private Keys up;
         private Keys left;
         private Keys right;
+        private const double PLAYERWIDTH = 1920;
+        private const double PLAYERHEIGHT = 1080;
 
         public enum Level
         {
@@ -197,7 +199,7 @@ namespace LunarLander
                     null, // Drawing the whole texture, not a part
                     Color.White,
                     (float)m_level.playerAngle,
-                    new Vector2(playerRectangle.Width / 2, playerRectangle.Height / 2),
+                    new Vector2(playerTexture.Width / 2, playerTexture.Height / 2),
                     SpriteEffects.None,
                     0);
             Vector2 stringSize1 = m_font.MeasureString("Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s");

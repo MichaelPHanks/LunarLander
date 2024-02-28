@@ -37,6 +37,13 @@
 /processorParam:TextureFormat=Color
 /build:flbb_3udr_220615.jpg
 
+#begin Fonts/mainmenuTitle.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/mainmenuTitle.spritefont
+
 #begin Fonts/menu-selected.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

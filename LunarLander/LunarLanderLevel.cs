@@ -37,7 +37,7 @@ namespace LunarLander
             thrustVector = new Vector2(0f,0f);
             horizontalVector = new Vector2(0f,0f);
             playerVectorVelocity = new Vector2(0f,0f);
-            playerAngle = 0;
+            playerAngle = Math.PI / 2;
         }
         public void setSpeedHorizontal(double newSpeed)
         { 

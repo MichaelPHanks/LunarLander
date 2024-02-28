@@ -31,10 +31,10 @@ namespace LunarLander
 
         protected override void Initialize()    
         {
-            m_graphics.IsFullScreen = true;
+            /*m_graphics.IsFullScreen = true;
             m_graphics.PreferredBackBufferWidth = 1920;
             m_graphics.PreferredBackBufferHeight = 1080;
-            m_graphics.ApplyChanges();
+            m_graphics.ApplyChanges();*/
             // TODO: Add your initialization logic here
             m_settings = new SettingsView();
             m_gamePlayView = new GamePlayView();
