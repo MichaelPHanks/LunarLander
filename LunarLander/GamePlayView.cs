@@ -18,7 +18,7 @@ namespace LunarLander
         private const string MESSAGE2 = "C to continue, ESC to go to main menu";
         private const float RECTANGLE2_ROTATION_RATE = MathHelper.Pi / 4;  // radians per second
         private Texture2D backgroundImage;
-        LunarLanderLevel m_level = new LunarLanderLevel(1);
+        LunarLanderLevel m_level;
         private double positionX = 15;
         private double positionY = 50;
         private Texture2D playerTexture;
@@ -70,6 +70,7 @@ namespace LunarLander
             up = Keys.W;
             left = Keys.A;
             right = Keys.D;
+            m_level =  new LunarLanderLevel(1, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
 
 
 
@@ -219,6 +220,13 @@ namespace LunarLander
                 new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
             m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + 2*stringSize1.Y), Color.White);
 
+
+            // Render triangle: 
+
+            m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
+                    PrimitiveType.TriangleList,
+                    m_level.m_vertsTris, 0, 1,
+                    m_level.m_indexTris, 0, m_level.m_indexTris.Length / 3);
             m_spriteBatch.End();
 
         }
@@ -277,7 +285,7 @@ namespace LunarLander
             playerY = 50f;
             currentLevel = Level.LEVELONE;
             currentStage = Stage.PLAYING;
-            m_level = new LunarLanderLevel(1);
+            m_level = new LunarLanderLevel(1, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
             playerFuel = 20d;
 
     }
