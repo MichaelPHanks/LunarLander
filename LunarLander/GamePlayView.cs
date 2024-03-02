@@ -35,6 +35,10 @@ namespace LunarLander
         private const double PLAYERWIDTH = 1920;
         private const double PLAYERHEIGHT = 1080;
         private BasicEffect m_effect;
+        Texture2D t; //base for the line texture
+
+
+
 
         public enum Level
         {
@@ -58,6 +62,10 @@ namespace LunarLander
         bool isPaused = false;
         public override void loadContent(ContentManager contentManager)
         {
+            // create 1x1 texture for line drawing
+            t = new Texture2D(m_graphics.GraphicsDevice, 1, 1);
+            t.SetData<Color>(
+                new Color[] { Color.White });
             m_font = contentManager.Load<SpriteFont>("Fonts/menu");
             playerTexture = contentManager.Load<Texture2D>("rocketShip");
             backgroundImage = contentManager.Load<Texture2D>("53072881464_d0a95851f1_k");
@@ -235,6 +243,17 @@ namespace LunarLander
                 new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
             m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + 2*stringSize1.Y), Color.White);
 
+            // Render the outline of the mountains:
+
+            for (int i = 0; i < m_level.lines.Count; i++)
+            {
+                DrawLine(m_spriteBatch, //draw line
+            new Vector2(m_level.lines[i].x1, m_level.lines[i].y1), //start of line
+            new Vector2(m_level.lines[i].x2, m_level.lines[i].y2) //end of line
+        );
+            }
+
+
             m_spriteBatch.End();
 
             // Render triangle: 
@@ -248,6 +267,29 @@ namespace LunarLander
                     m_level.m_indexTris, 0, m_level.m_indexTris.Length / 3);
             }
 
+
+        }
+
+        void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end)
+        {
+            Vector2 edge = end - start;
+            // calculate angle to rotate line
+            float angle =
+                (float)Math.Atan2(edge.Y, edge.X);
+
+
+            sb.Draw(t,
+                new Rectangle(// rectangle defines shape of line and position of start of line
+                    (int)start.X,
+                    (int)start.Y,
+                    (int)edge.Length(), //sb will strech the texture to fill this rectangle
+                    1), //width of line, change this to make thicker line
+                null,
+                Color.Red, //colour of line
+                angle,     //angle of line (calulated above)
+                new Vector2(0, 0), // point in line about which to rotate
+                SpriteEffects.None,
+                0);
 
         }
 

@@ -85,7 +85,7 @@ namespace LunarLander
                 lines.Add(thirdThird);
 
                 List<Line> finalMap = midPointFormula(lines);
-
+                lines = finalMap.ToList();
                 // Create triangles below map.
 
                 finalMap.Insert((finalMap.Count / 3) , safeZone1);
