@@ -34,6 +34,7 @@ namespace LunarLander
         private Keys right;
         private const double PLAYERWIDTH = 1920;
         private const double PLAYERHEIGHT = 1080;
+        private BasicEffect m_effect;
 
         public enum Level
         {
@@ -72,8 +73,22 @@ namespace LunarLander
             right = Keys.D;
             m_level =  new LunarLanderLevel(1, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
 
+            m_graphics.GraphicsDevice.RasterizerState = new RasterizerState
+            {
+                FillMode = FillMode.Solid,
+                CullMode = CullMode.CullCounterClockwiseFace,   // CullMode.None If you want to not worry about triangle winding order
+                MultiSampleAntiAlias = true,
+            };
+            m_effect = new BasicEffect(m_graphics.GraphicsDevice)
+            {
+                VertexColorEnabled = true,
+                View = Matrix.CreateLookAt(new Vector3(0, 0, 1), Vector3.Zero, Vector3.Up),
 
-
+                Projection = Matrix.CreateOrthographicOffCenter(
+                    0, m_graphics.GraphicsDevice.Viewport.Width,
+                    m_graphics.GraphicsDevice.Viewport.Height, 0,   // doing this to get it to match the default of upper left of (0, 0)
+                    0.1f, 2)
+            };
 
         }
 
@@ -220,14 +235,19 @@ namespace LunarLander
                 new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
             m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + 2*stringSize1.Y), Color.White);
 
+            m_spriteBatch.End();
 
             // Render triangle: 
+            foreach (EffectPass pass in m_effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
 
-            m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
+                m_graphics.GraphicsDevice.DrawUserIndexedPrimitives(
                     PrimitiveType.TriangleList,
-                    m_level.m_vertsTris, 0, 1,
+                    m_level.m_vertsTris, 0, m_level.m_vertsTris.Length,
                     m_level.m_indexTris, 0, m_level.m_indexTris.Length / 3);
-            m_spriteBatch.End();
+            }
+
 
         }
 

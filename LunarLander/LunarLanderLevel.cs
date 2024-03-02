@@ -28,7 +28,11 @@ namespace LunarLander
         private double speedVertical;
         private double fuel;
 
+
         public List<Line> lines;
+        private VertexPositionColor[] m_vertsTriStrip;
+        private int[] m_indexTriStrip;
+
         private double speedHorizontal { get; set; }
         public LunarLanderLevel(double levelNumber, int width, int height)
         {
@@ -62,17 +66,19 @@ namespace LunarLander
             {
                 // Create two safe zones (will hard code for now)
                 // First safe zone: (3,3.75) -> (3.75, 3.75)
-                Line safeZone1 = new Line(width / 5, height / 4, width / 4, height / 4);
-
                 
-                Line safeZone2 = new Line(width / 2, height / 6, (int)(width / 1.5), height / 6);
 
+
+                Line safeZone1 = new Line(width / 5, height / 2, width / 4, height / 2);
+
+
+                Line safeZone2 = new Line(width / 2, (int)(height / 1.5), (int)(width / 1.5), (int)(height / 1.5));
                 // Create line from beginning to first safe zone, another line from end of first safe zone to
                 // beginning of second safe zone, and a last one from end of second safe zone to end of screen.
 
-                Line firstThird = new Line(0, height / 3, width / 5, height / 4);
-                Line secondThird = new Line(width / 4, height / 4, width / 2, height / 6);
-                Line thirdThird = new Line((int)(width / 1.5), height / 6, width, height / 3);
+                Line firstThird = new Line(0, (int)(height / 1.25), width / 5, height / 2);
+                Line secondThird = new Line(width / 4, height / 2, width / 2, (int)(height / 1.5));
+                Line thirdThird = new Line((int)(width / 1.5), (int)(height / 1.5), width, (int)(height / 1.25));
 
                 lines.Add(firstThird);
                 lines.Add(secondThird);
@@ -88,9 +94,63 @@ namespace LunarLander
 
 
                 List<VertexPositionColor> vertexPositionColors = new List<VertexPositionColor>();
-                m_vertsTris = new VertexPositionColor[finalMap.Count];
+                m_vertsTris = new VertexPositionColor[finalMap.Count * 2 * 3];
 
-                m_vertsTris[0].Position = new Vector3(100, 300, 0);
+                int mapCounter = 0;
+                m_indexTris = new int[finalMap.Count * 3 * 2];
+
+                for (int i = 0; i < m_vertsTris.Length; i+=6)
+                {
+                    if (finalMap[mapCounter].y1 == 0)
+                    {
+                        Console.WriteLine();
+                    }
+                    m_vertsTris[i].Position = new Vector3(finalMap[mapCounter].x1, finalMap[mapCounter].y1, 0);
+                    m_vertsTris[i].Color = Microsoft.Xna.Framework.Color.Gray;
+                    m_indexTris[i] = i;
+
+                    m_vertsTris[i + 1].Position = new Vector3(finalMap[mapCounter].x2, finalMap[mapCounter].y2, 0);
+                    m_vertsTris[i + 1].Color = Microsoft.Xna.Framework.Color.Gray;
+                    m_indexTris[i+ 1] = i+ 1;
+
+                    m_vertsTris[i + 2].Position = new Vector3(finalMap[mapCounter].x1, height, 0) ;
+                    m_vertsTris[i + 2].Color = Microsoft.Xna.Framework.Color.Gray;
+                    m_indexTris[i + 2] = i + 2;
+
+                    m_vertsTris[i + 3].Position = new Vector3(finalMap[mapCounter].x2, finalMap[mapCounter].y2, 0);
+                    m_vertsTris[i + 3].Color = Microsoft.Xna.Framework.Color.Gray;
+                    m_indexTris[i + 3] = i + 3;
+
+                    m_vertsTris[i + 4].Position = new Vector3(finalMap[mapCounter].x2, height, 0);
+                    m_vertsTris[i + 4].Color = Microsoft.Xna.Framework.Color.Gray;
+                    m_indexTris[i + 4] = i + 4;
+
+                    m_vertsTris[i + 5].Position = new Vector3(finalMap[mapCounter].x1, height, 0);
+                    m_vertsTris[i + 5].Color = Microsoft.Xna.Framework.Color.Gray;
+                    m_indexTris[i + 5] = i + 5;
+                    /*if (i % 3 == 0)
+                    {
+                        m_vertsTris[i].Position = new Vector3(finalMap[mapCounter].x1, finalMap[mapCounter].y1, 0);
+                        m_vertsTris[i].Color = Microsoft.Xna.Framework.Color.Red;
+                    }
+                    if (i - 1 % 3 == 0)
+                    {
+                        m_vertsTris[i].Position = new Vector3(finalMap[mapCounter].x2, finalMap[mapCounter].y2, 0);
+                        m_vertsTris[i].Color = Microsoft.Xna.Framework.Color.Red;
+                    }
+                    else 
+                    {
+                        m_vertsTris[i].Position = new Vector3(finalMap[mapCounter].x1, finalMap[mapCounter].y1, 0);
+                        m_vertsTris[i].Color = Microsoft.Xna.Framework.Color.Red;
+                    }*/
+
+
+                    
+                    mapCounter++;
+                    
+                    
+                }
+                /*m_vertsTris[0].Position = new Vector3(100, 300, 0);
                 m_vertsTris[0].Color = Microsoft.Xna.Framework.Color.Red;
                 m_vertsTris[1].Position = new Vector3(200, 100, 0);
                 m_vertsTris[1].Color = Microsoft.Xna.Framework.Color.Green;
@@ -102,8 +162,61 @@ namespace LunarLander
                 // Triangle 1 - Indexes
                 m_indexTris[0] = 0;
                 m_indexTris[1] = 1;
-                m_indexTris[2] = 2;
+                m_indexTris[2] = 2;*/
                 //vertexPositionColors[0].Position = new Vector3()
+
+                /*m_vertsTris = new VertexPositionColor[6];
+
+                // Define the position and color for each vertex - Triangle 1
+                m_vertsTris[0].Position = new Vector3(100, 300, 0);
+                m_vertsTris[0].Color = Microsoft.Xna.Framework.Color.Red;
+                m_vertsTris[1].Position = new Vector3(200, 100, 0);
+                m_vertsTris[1].Color = Microsoft.Xna.Framework.Color.Green;
+                m_vertsTris[2].Position = new Vector3(300, 300, 0);
+                m_vertsTris[2].Color = Microsoft.Xna.Framework.Color.Blue;
+
+                // Define the position and color for each vertex - Triangle 2
+                m_vertsTris[3].Position = new Vector3(500, 300, 0);
+                m_vertsTris[3].Color = Microsoft.Xna.Framework.Color.Blue;
+                m_vertsTris[4].Position = new Vector3(600, 100, 0);
+                m_vertsTris[4].Color = Microsoft.Xna.Framework.Color.Green;
+                m_vertsTris[5].Position = new Vector3(700, 300, 0);
+                m_vertsTris[5].Color = Microsoft.Xna.Framework.Color.Red;
+
+                // Create an array that holds the 'index' of each vertex
+                // for each triangle, in groups of 3
+                m_indexTris = new int[6];
+
+                // Triangle 1 - Indexes
+                m_indexTris[0] = 0;
+                m_indexTris[1] = 1;
+                m_indexTris[2] = 2;
+
+                // Triangle 2 - Indexes
+                m_indexTris[3] = 3;
+                m_indexTris[4] = 4;
+                m_indexTris[5] = 5;
+
+                //
+                // Define the data for 3 triangles in a triangle strip
+                m_vertsTriStrip = new VertexPositionColor[5];
+                m_vertsTriStrip[0].Position = new Vector3(200, 600, 0);
+                m_vertsTriStrip[0].Color = Microsoft.Xna.Framework.Color.Red;
+                m_vertsTriStrip[1].Position = new Vector3(300, 400, 0);
+                m_vertsTriStrip[1].Color = Microsoft.Xna.Framework.Color.Green;
+                m_vertsTriStrip[2].Position = new Vector3(400, 600, 0);
+                m_vertsTriStrip[2].Color = Microsoft.Xna.Framework.Color.Blue;
+                m_vertsTriStrip[3].Position = new Vector3(500, 400, 0);
+                m_vertsTriStrip[3].Color = Microsoft.Xna.Framework.Color.Red;
+                m_vertsTriStrip[4].Position = new Vector3(600, 600, 0);
+                m_vertsTriStrip[4].Color = Microsoft.Xna.Framework.Color.Green;
+
+                m_indexTriStrip = new int[6];
+                m_indexTriStrip[0] = 0;
+                m_indexTriStrip[1] = 1;
+                m_indexTriStrip[2] = 2;
+                m_indexTriStrip[3] = 3;
+                m_indexTriStrip[4] = 4;*/
 
             }
 
@@ -120,7 +233,7 @@ namespace LunarLander
             Random random = new Random();
             List<Line> lines = startingLines;
 
-            for (int i = 0; i < 5; i ++)
+            for (int i = 0; i < 6; i ++)
             {
                 //lines = startingLines;
                 List<Line> lines1 = new List<Line>();
@@ -128,15 +241,28 @@ namespace LunarLander
                 for (int j = 0; j < lines.Count; j++)
                 {
                     // Modify startingLines
-                    int midX = (lines[j].x1 - lines[j].x2) / 2;
-                    int midY = (lines[j].y1 - lines[j].y2) / 2;
+                    int midX = (lines[j].x2 + lines[j].x1) / 2;
+                    int midY = Math.Abs((lines[j].y2 + lines[j].y1)) / 2;
 
                     // Get a random number from -25 to 25???
 
                     // X stays the same, y changes.
+                    double u1 = 1.0 - random.NextDouble(); //uniform(0,1] random doubles
+                    double u2 = 1.0 - random.NextDouble();
+                    double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
+                                 Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
+                    double randNormal =
+                                 0 + 1 * randStdNormal;
 
-                    midY += random.Next(-25,25);
 
+                    int r = (int)(0.5 * randStdNormal * Math.Abs(lines[j].x2 - lines[j].x1)) ;
+
+                    midY = (int)(0.5 * (lines[j].y2 + lines[j].y1) + r);
+                    //midY += random.Next(-50,50);
+                    if (midY <  100)
+                    {
+                        Console.WriteLine();
+                    }
                     // Remove the starting lines
                     Line tempLine = lines[j];
                     //startingLines.RemoveAt(j + 2);
