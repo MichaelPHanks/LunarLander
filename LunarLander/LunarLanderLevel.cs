@@ -233,7 +233,7 @@ namespace LunarLander
             Random random = new Random();
             List<Line> lines = startingLines;
 
-            for (int i = 0; i < 6; i ++)
+            for (int i = 0; i < 5; i ++)
             {
                 //lines = startingLines;
                 List<Line> lines1 = new List<Line>();

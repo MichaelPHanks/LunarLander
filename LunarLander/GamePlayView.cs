@@ -229,19 +229,19 @@ namespace LunarLander
             Vector2 stringSize1 = m_font.MeasureString("Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s");
             m_spriteBatch.DrawString(m_font, "Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s",
                 new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
-            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y), Color.White);
+            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y), playerFuel > 0 ? Color.Green : Color.White);
 
 
              stringSize1 = m_font.MeasureString("Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s");
             m_spriteBatch.DrawString(m_font, "Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s",
                 new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
-            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + stringSize1.Y), Color.White);
+            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + stringSize1.Y), Math.Abs(m_level.playerVectorVelocity.Y) > 2 ? Color.White: Color.Green);
 
 
              stringSize1 = m_font.MeasureString("Angle  : " + string.Format("{0:0.00}",MathHelper.ToDegrees((float)m_level.playerAngle)) + "");
             m_spriteBatch.DrawString(m_font, "Angle  : " + string.Format("{0:0.00}",MathHelper.ToDegrees((float)m_level.playerAngle)) + "",
                 new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
-            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + 2*stringSize1.Y), Color.White);
+            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + 2*stringSize1.Y), MathHelper.ToDegrees((float)m_level.playerAngle) < 5 || MathHelper.ToDegrees((float)m_level.playerAngle) > 355 ? Color.Green : Color.White);
 
             // Render the outline of the mountains:
 
