@@ -30,6 +30,7 @@ namespace LunarLander
 
 
         public List<Line> lines;
+
         private VertexPositionColor[] m_vertsTriStrip;
         private int[] m_indexTriStrip;
 
@@ -85,12 +86,12 @@ namespace LunarLander
                 lines.Add(thirdThird);
 
                 List<Line> finalMap = midPointFormula(lines);
-                lines = finalMap.ToList();
                 // Create triangles below map.
 
                 finalMap.Insert((finalMap.Count / 3) , safeZone1);
                 finalMap.Insert((finalMap.Count * 2/3) + 1, safeZone2);
 
+                lines = finalMap.ToList();
 
 
                 List<VertexPositionColor> vertexPositionColors = new List<VertexPositionColor>();

@@ -37,6 +37,8 @@ namespace LunarLander
         private BasicEffect m_effect;
         Texture2D t; //base for the line texture
 
+        private Circle playerCircle;
+        
 
 
 
@@ -97,6 +99,8 @@ namespace LunarLander
                     m_graphics.GraphicsDevice.Viewport.Height, 0,   // doing this to get it to match the default of upper left of (0, 0)
                     0.1f, 2)
             };
+
+            playerCircle = new Circle(new Tuple<double,double>(75, 75), Math.Max(playerTexture.Width / 2, playerTexture.Height / 2));
 
         }
 
@@ -217,6 +221,11 @@ namespace LunarLander
 
 
             // Render the fuel, speed, and angle.
+
+
+            // Draw the rectangle behind the player:
+            m_spriteBatch.Draw(backgroundImage, playerRectangle, Color.White);
+            
             m_spriteBatch.Draw(
                     playerTexture,
                     new Rectangle((int)playerX, (int)playerY, playerRectangle.Width, playerRectangle.Height),
@@ -301,12 +310,15 @@ namespace LunarLander
                 currentLevel = Level.LEVELTWO;
                 currentStage = Stage.PLAYING;
             }
-            
-            m_level.playerVectorVelocity += m_level.gravityVector * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.5f;
-            m_level.playerVectorVelocity += m_level.thrustVector * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.5f;
-            playerX += (float)(m_level.playerVectorVelocity.X * 0.1);
-            playerY -= (float)(m_level.playerVectorVelocity.Y * 0.1);
+            if (!isCollision())
+            {
+                m_level.playerVectorVelocity += m_level.gravityVector * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.5f;
+                m_level.playerVectorVelocity += m_level.thrustVector * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.5f;
+                playerX += (float)(m_level.playerVectorVelocity.X * 0.1);
+                playerY -= (float)(m_level.playerVectorVelocity.Y * 0.1);
+                playerCircle.setCenter(new Tuple<double, double>(playerCircle.center.Item1 + (m_level.playerVectorVelocity.X * 0.1), playerCircle.center.Item2 - (m_level.playerVectorVelocity.Y * 0.1)));
 
+            }
         }
         private void onMoveUp(GameTime gameTime)
         {
@@ -349,7 +361,80 @@ namespace LunarLander
             currentStage = Stage.PLAYING;
             m_level = new LunarLanderLevel(1, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
             playerFuel = 20d;
+            playerCircle = new Circle(new Tuple<double, double>(50, 50), Math.Max(playerTexture.Width / 2, playerTexture.Height / 2));
 
-    }
+
+        }
+
+        public bool isCollision()
+        {
+            for (int i = 0; i < m_level.lines.Count; i++)
+            {
+                if (lineCircleInterSection(m_level.lines[i], playerCircle))
+                { 
+                    return true;
+                }
+
+            }
+
+            
+
+
+            /* function lineCircleIntersection(pt1, pt2, circle)
+             {
+                 let v1 = { x: pt2.x - pt1.x, y: pt2.y - pt1.y };
+         let v2 = { x: pt1.x - circle.center.x, y: pt1.y - circle.center.y };
+         let b = -2 * (v1.x * v2.x + v1.y * v2.y);
+         let c = 2 * (v1.x * v1.x + v1.y * v1.y);
+         let d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.radius * circle.radius));
+     if (isNaN(d)) { // no intercept
+         return false;
+     }
+     // These represent the unit distance of point one and two on the line
+     let u1 = (b - d) / c;
+         let u2 = (b + d) / c;
+     if (u1 <= 1 && u1 >= 0) {  // If point on the line segment
+         return true;
+     }
+     if (u2 <= 1 && u2 >= 0) {  // If point on the line segment
+         return true;
+     }
+     return false;*/
+
+
+
+            return false; 
+        }
+
+        public bool lineCircleInterSection(Line line, Circle circle)
+        {
+            var v1 = new { X = line.x2 - line.x1, Y = line.y2 - line.y1 };
+            var v2 = new { X = line.x1 - circle.center.Item1, Y = line.y1 - circle.center.Item2 };
+            var b = -2 * (v1.X * v2.X + v1.Y * v2.Y);
+            var c = 2 * (v1.X * v1.X + v1.Y * v1.Y);
+            var d = Math.Sqrt(b * b - 2 * c * (v2.X * v2.X + v2.Y * v2.Y - circle.radius * circle.radius));
+
+            if (double.IsNaN(d)) // no intercept
+            {
+                return false;
+            }
+
+            // These represent the unit distance of point one and two on the line
+            var u1 = (b - d) / c;
+            var u2 = (b + d) / c;
+
+            if (u1 <= 1 && u1 >= 0) // If point on the line segment
+            {
+                return true;
+            }
+
+            if (u2 <= 1 && u2 >= 0) // If point on the line segment
+            {
+                return true;
+            }
+
+            return false;
+        }
+    
     }
 }
