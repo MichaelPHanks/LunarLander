@@ -12,6 +12,7 @@ namespace LunarLander
 {
     public class AboutView : GameStateView
     {
+        // Adding a fun comment to the about view...
         private SpriteFont m_font;
         private const string MESSAGE = "I wrote this amazing game";
         public override void loadContent(ContentManager contentManager)
