@@ -3,6 +3,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.IO.IsolatedStorage;
+using System.IO;
+using System.Runtime.Serialization.Json;
+using System.Threading.Tasks;
+using CS5410;
+using System;
 
 namespace LunarLander
 {
@@ -14,9 +20,7 @@ namespace LunarLander
         private IGameState m_prevState;
         private Dictionary<GameStateEnum, IGameState> m_gameStates;
         private IGameState savedGamePlay;
-        private Keys up;
-        private Keys right;
-        private Keys left;
+        
         private SettingsView m_settings;
         private GamePlayView m_gamePlayView;
         private GameStateEnum m_gameState;
@@ -31,10 +35,16 @@ namespace LunarLander
 
         protected override void Initialize()    
         {
+            // This sets up the highscores and key bindings, if they do not exist.
+            setUpFiles();
+
+
             //m_graphics.IsFullScreen = true;
             m_graphics.PreferredBackBufferWidth = 1920;
             m_graphics.PreferredBackBufferHeight = 1080;
             m_graphics.ApplyChanges();
+
+
             // TODO: Add your initialization logic here
             m_settings = new SettingsView();
             m_gamePlayView = new GamePlayView();
@@ -44,22 +54,146 @@ namespace LunarLander
             m_gameStates.Add(GameStateEnum.GamePlay, m_gamePlayView);
             m_gameStates.Add(GameStateEnum.Paused, new PauseView());
             m_gameStates.Add(GameStateEnum.Settings, m_settings);
+            m_gameStates.Add(GameStateEnum.HighScores, new HighScoresView());
+            m_gameStates.Add(GameStateEnum.Help, new HelpView());
 
-            // Initialize highscores and keyboard files, if they do not exist.
 
-            foreach (var item in m_gameStates)
-            {
-                item.Value.initialize(this.GraphicsDevice, m_graphics);
-            }
+            
+
+
+
+                foreach (var item in m_gameStates)
+                {
+                    item.Value.initialize(this.GraphicsDevice, m_graphics);
+                }
 
             m_currentState = m_gameStates[GameStateEnum.MainMenu];
             m_prevState = m_gameStates[GameStateEnum.MainMenu];
             m_gameState = GameStateEnum.MainMenu;
-            up = Keys.W;
-            right = Keys.D;
-            left = Keys.A;
+            
             
             base.Initialize();
+        }
+
+
+        private void setUpFiles()
+        {
+            lock (this)
+            {
+
+                initializeFiles();
+            }
+        }
+
+
+        /// <summary>
+        ///     If this is the first time running on this computer 
+        ///     (if the key-bindings and highscores do not exist), 
+        ///     create the files
+        /// </summary>
+        private async Task initializeFiles()
+        {
+            await Task.Run(() =>
+            {
+                using (IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+
+                    try
+                    {
+                        if (!storage.FileExists("KeyControls.json"))
+                        {
+                            saveDefualtControls(new KeyControls(Keys.Left, Keys.Right, Keys.Up));
+                        }
+                        
+                    }
+                    catch (IsolatedStorageException)
+                    {
+                        // Ideally show something to the user, but this is demo code :)
+
+                    }
+
+                    try 
+                    {
+                        if (!storage.FileExists("HighScores.json"))
+                        {
+                            saveDefualtHighScores(new HighScoresState(new List<Tuple<int, DateTime>> { new Tuple<int, DateTime>(10, DateTime.Now) }));
+                        }
+                    }
+                    catch (IsolatedStorageException) { }
+                }
+
+            });
+        }
+
+        private void saveDefualtHighScores(HighScoresState highScore)
+        {
+            lock (this)
+            {
+                finalizeSaveAsyncHighScores(highScore);
+            }
+        }
+
+        private async Task finalizeSaveAsyncHighScores(HighScoresState state)
+        {
+            await Task.Run(() =>
+            {
+                using (IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    try
+                    {
+                        using (IsolatedStorageFileStream fs = storage.OpenFile("HighScores.json", FileMode.Create))
+                        {
+                            if (fs != null)
+                            {
+                                DataContractJsonSerializer mySerializer = new DataContractJsonSerializer(typeof(HighScoresState));
+                                mySerializer.WriteObject(fs, state);
+                            }
+                        }
+                    }
+                    catch (IsolatedStorageException)
+                    {
+                        // Ideally show something to the user, but this is demo code :)
+                    }
+                }
+
+            });
+        }
+        /// <summary>
+        /// Demonstrates how serialize an object to storage
+        /// </summary>
+        private void saveDefualtControls(KeyControls controls)
+        {
+            lock (this)
+            {
+                    finalizeSaveAsyncKeyBindings(controls);
+            }
+        }
+
+
+        private async Task finalizeSaveAsyncKeyBindings(KeyControls state)
+        {
+            await Task.Run(() =>
+            {
+                using (IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    try
+                    {
+                        using (IsolatedStorageFileStream fs = storage.OpenFile("KeyControls.json", FileMode.Create))
+                        {
+                            if (fs != null)
+                            {
+                                DataContractJsonSerializer mySerializer = new DataContractJsonSerializer(typeof(KeyControls));
+                                mySerializer.WriteObject(fs, state);
+                            }
+                        }
+                    }
+                    catch (IsolatedStorageException)
+                    {
+                        // Ideally show something to the user, but this is demo code :)
+                    }
+                }
+
+            });
         }
 
         protected override void LoadContent()
@@ -87,17 +221,6 @@ namespace LunarLander
             {
                 m_currentState.update(gameTime);
 
-                // TODO: Need to make it so it saves the previous game state, and can resume when paused.
-                // Also so we can start a new game once we go to the main menu.
-
-                // If the previous game state we have is Main menu and the next is gameplay, make a new game
-
-                // If the previous game state is gameplay and the next is pausing, save the gameplay.
-
-                // If the previous game state is pause view, and the next is the main menu,
-                // keep the saved gameplay (should already be save anyways).
-
-                // If the saved gameplay is not null, the next game state is gameplay, and the previous game state is paused, load that gameplay
                 
                 if (m_prevState == m_gameStates[GameStateEnum.MainMenu] && nextStateEnum == GameStateEnum.GamePlay)
                 {
@@ -111,27 +234,8 @@ namespace LunarLander
                 }
 
 
-                // If the previous game state is settings, we need to check for differences in the keys used for gameplay.
 
-                if (m_prevState == m_gameStates[GameStateEnum.Settings])
-                {
-                    if (m_settings.up != up)
-                    {
-                        m_gamePlayView.ModifyKey(KeyEnum.Up,m_settings.up);
-                        up = m_settings.up;
-                    }
-                    if (m_settings.left != left)
-                    {
-                        m_gamePlayView.ModifyKey(KeyEnum.Left, m_settings.left);
-                        left = m_settings.left;
-                    }
-                    if (m_settings.right != right)
-                    {
-                        m_gamePlayView.ModifyKey(KeyEnum.Right, m_settings.right);
-                        right = m_settings.right;
-                    }
-
-                }
+                
 
                 if (nextStateEnum == GameStateEnum.Settings && m_gameState != GameStateEnum.Settings)
                 {
@@ -140,11 +244,17 @@ namespace LunarLander
 
                     
                 }
-                
-               /* if (m_prevState == m_gameStates[GameStateEnum.Paused] && nextStateEnum == GameStateEnum.GamePlay && savedGamePlay != null)
+
+                if (nextStateEnum == GameStateEnum.HighScores)
                 {
-                    m_currentState = savedGamePlay;
-                }*/
+                    m_gameStates[nextStateEnum] = null;
+                    m_gameStates[nextStateEnum] = new HighScoresView();
+                    m_gameStates[nextStateEnum].initialize(this.GraphicsDevice, m_graphics);
+                    m_gameStates[nextStateEnum].loadContent(this.Content);
+
+
+                }
+
 
                 m_currentState = m_gameStates[nextStateEnum];
                 m_prevState = m_gameStates[nextStateEnum];

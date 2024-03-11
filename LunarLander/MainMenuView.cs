@@ -51,7 +51,7 @@ namespace LunarLander
         {
             m_fontMenu = contentManager.Load<SpriteFont>("Fonts/menu");
             m_fontMenuSelect = contentManager.Load<SpriteFont>("Fonts/menu-selected");
-            hover = contentManager.Load<SoundEffect>("hoverSoundEffect");
+            hover = contentManager.Load<SoundEffect>("little_robot_sound_factory_multimedia_Click_Electronic_14");
             mainBackground = contentManager.Load<Texture2D>("flbb_3udr_220615");
             m_fontTitle = contentManager.Load<SpriteFont>("Fonts/mainmenuTitle");
             soundInstance = hover.CreateInstance();

@@ -55,7 +55,7 @@ namespace LunarLander
             m_fontMenuSelect = contentManager.Load<SpriteFont>("Fonts/menu-selected");
             behindSquare = contentManager.Load<Texture2D>("pixil-frame-0 (6)");
 
-            loadSomething();
+            loadKeyControls();
 
             up = m_loadedState.Up;
             left = m_loadedState.Left;
@@ -94,18 +94,18 @@ namespace LunarLander
                             if (m_currentSelection == KeySelection.Left)
                             {
                                 left = keys[0];
-                                saveSomething();
+                                saveKeyControls();
                             }
                             else if (m_currentSelection == KeySelection.Up)
                             {
                                 up = keys[0];
-                                saveSomething();
+                                saveKeyControls();
 
                             }
                             else if (m_currentSelection == KeySelection.Right)
                             {
                                 right = keys[0];
-                                saveSomething();
+                                saveKeyControls();
 
                             }
                         }
@@ -257,7 +257,7 @@ namespace LunarLander
         /// <summary>
         /// Demonstrates how serialize an object to storage
         /// </summary>
-        private void saveSomething()
+        private void saveKeyControls()
         {
             lock (this)
             {
@@ -304,7 +304,7 @@ namespace LunarLander
         /// <summary>
         /// Demonstrates how to deserialize an object from storage device
         /// </summary>
-        private void loadSomething()
+        private void loadKeyControls()
         {
             lock (this)
             {
@@ -336,6 +336,8 @@ namespace LunarLander
                                     DataContractJsonSerializer mySerializer = new DataContractJsonSerializer(typeof(KeyControls));
                                     m_loadedState = (KeyControls)mySerializer.ReadObject(fs);
                                 }
+
+                                
                             }
                         }
                     }

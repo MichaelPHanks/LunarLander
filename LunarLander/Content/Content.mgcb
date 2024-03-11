@@ -70,6 +70,12 @@
 /processorParam:Quality=Best
 /build:hoverSoundEffect2.wav
 
+#begin little_robot_sound_factory_multimedia_Click_Electronic_14.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:little_robot_sound_factory_multimedia_Click_Electronic_14.mp3
+
 #begin pixil-frame-0 (6).png
 /importer:TextureImporter
 /processor:TextureProcessor

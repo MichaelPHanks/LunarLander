@@ -1,11 +1,15 @@
-﻿using LunarLander.InputHandling;
+﻿using CS5410;
+using LunarLander.InputHandling;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.IO.IsolatedStorage;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -36,12 +40,16 @@ namespace LunarLander
         private const double PLAYERHEIGHT = 1080;
         private BasicEffect m_effect;
         Texture2D t; //base for the line texture
+        private KeyControls m_loadedState = null;
+        private HighScoresState m_highScoresState = null;
+        private bool saving = false;
+        private bool loading = false;
 
+        private bool loadKeys = false;
+        private bool firstUpdate = false;
+        private bool savedScore = false;
         private Circle playerCircle;
         
-
-
-
         public enum Level
         {
             LEVELONE,
@@ -62,6 +70,7 @@ namespace LunarLander
         private Stage currentStage = Stage.PLAYING;
 
         bool isPaused = false;
+
         public override void loadContent(ContentManager contentManager)
         {
             // create 1x1 texture for line drawing
@@ -75,12 +84,18 @@ namespace LunarLander
             playerX = 50f;
             playerY = 50f;
             keyboardInput = new KeyboardInput();
-            keyboardInput.registerCommand(Keys.W, false, new IInputDevice.CommandDelegate(onMoveUp));
-            keyboardInput.registerCommand(Keys.A, false, new IInputDevice.CommandDelegate(onMoveLeft));
-            keyboardInput.registerCommand(Keys.D, false, new IInputDevice.CommandDelegate(onMoveRight));
-            up = Keys.W;
-            left = Keys.A;
-            right = Keys.D;
+
+
+
+            loadControlsAndHighScores();
+
+
+            keyboardInput.registerCommand(m_loadedState.Up, false, new IInputDevice.CommandDelegate(onMoveUp));
+            keyboardInput.registerCommand(m_loadedState.Left, false, new IInputDevice.CommandDelegate(onMoveLeft));
+            keyboardInput.registerCommand(m_loadedState.Right, false, new IInputDevice.CommandDelegate(onMoveRight));
+            up = m_loadedState.Up;
+            left = m_loadedState.Left;
+            right = m_loadedState.Right;
             m_level =  new LunarLanderLevel(1, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
 
             m_graphics.GraphicsDevice.RasterizerState = new RasterizerState
@@ -104,6 +119,69 @@ namespace LunarLander
 
         }
 
+       
+
+        private void loadControlsAndHighScores()
+        {
+            lock (this)
+            {
+                if (!this.loading)
+                {
+                    this.loading = true;
+                    // Yes, I know the result is not being saved, I dont' need it
+                    var result = finalizeLoadAsync();
+                    result.Wait();
+
+                }
+            }
+        }
+
+        private async Task finalizeLoadAsync()
+        {
+            await Task.Run(() =>
+            {
+                using (IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    try
+                    {
+                        if (storage.FileExists("KeyControls.json"))
+                        {
+                            using (IsolatedStorageFileStream fs = storage.OpenFile("KeyControls.json", FileMode.Open))
+                            {
+                                if (fs != null)
+                                {
+                                    DataContractJsonSerializer mySerializer = new DataContractJsonSerializer(typeof(KeyControls));
+                                    m_loadedState = (KeyControls)mySerializer.ReadObject(fs);
+                                }
+
+
+                            }
+                        }
+
+                        if (storage.FileExists("HighScores.json"))
+                        {
+                            using (IsolatedStorageFileStream fs = storage.OpenFile("HighScores.json", FileMode.Open))
+                            {
+                                if (fs != null)
+                                {
+                                    DataContractJsonSerializer mySerializer = new DataContractJsonSerializer(typeof(HighScoresState));
+                                    m_highScoresState = (HighScoresState)mySerializer.ReadObject(fs);
+                                }
+
+
+                            }
+                        }
+                    }
+                    catch (IsolatedStorageException)
+                    {
+                        // Ideally show something to the user, but this is demo code :)
+                    }
+                }
+
+                this.loading = false;
+            });
+        }
+
         private void onMoveRight(GameTime gameTime)
         {
             m_level.playerAngle += (RECTANGLE2_ROTATION_RATE * gameTime.ElapsedGameTime.TotalMilliseconds / 250.0f);
@@ -111,10 +189,7 @@ namespace LunarLander
             {
                 m_level.playerAngle -= 2 * Math.PI;
             }
-            /*if (m_level.playerAngle + 90< 0)
-            {
-                m_level.playerAngle += 360;
-            }*/
+           
         }
 
         private void onMoveLeft(GameTime gameTime)
@@ -125,10 +200,7 @@ namespace LunarLander
                 m_level.playerAngle += 2 * Math.PI;
             }
 
-            /*if (m_level.playerAngle + 90> 360)
-            {
-                m_level.playerAngle -= 360;
-            }*/
+          
         }
 
         public override GameStateEnum processInput(GameTime gameTime)
@@ -139,7 +211,8 @@ namespace LunarLander
             {
                 isPaused = true;
                 isESCDown = true;
-
+                loadKeys = true;
+                firstUpdate = true;
                 return GameStateEnum.Paused;
                 
                 
@@ -194,30 +267,7 @@ namespace LunarLander
             { 
                 
             }
-            /*if (!isPaused)
-            {
-                
-                m_spriteBatch.Draw(
-                    playerTexture,
-                    new Rectangle((int)playerX,(int) playerY, playerRectangle.Width, playerRectangle.Height),
-                    null, // Drawing the whole texture, not a part
-                    Color.White,
-                    (float)m_level.playerAngle,
-                    new Vector2(playerRectangle.Width / 2, playerRectangle.Height / 2),
-                    SpriteEffects.None,
-                    0);
-               *//* Vector2 stringSize = m_font.MeasureString(MESSAGE);
-                m_spriteBatch.DrawString(m_font, MESSAGE,
-                    new Vector2((int)positionX,
-                    (int)positionY), Color.White);*//*
-            }
-            else 
-            {
-                Vector2 stringSize = m_font.MeasureString(MESSAGE2);
-                m_spriteBatch.DrawString(m_font, MESSAGE2,
-                    new Vector2(m_graphics.PreferredBackBufferWidth / 2 - stringSize.X / 2,
-                m_graphics.PreferredBackBufferHeight / 2 - stringSize.Y), Color.White);
-            }*/
+           
 
 
             // Render the fuel, speed, and angle.
@@ -308,6 +358,18 @@ namespace LunarLander
         public override void update(GameTime gameTime)
         {
 
+            if (loadKeys && !firstUpdate)
+            {
+                loadControlsAndHighScores();
+
+                ModifyKey(KeyEnum.Up, m_loadedState.Up);
+                ModifyKey(KeyEnum.Left, m_loadedState.Left);
+                ModifyKey(KeyEnum.Right, m_loadedState.Right);
+                loadKeys = false;
+            }
+
+            firstUpdate = false;
+
             if (currentLevel == Level.LEVELONE && currentStage == Stage.COMPLETED)
             {
                 currentLevel = Level.LEVELTWO;
@@ -322,6 +384,13 @@ namespace LunarLander
                 playerCircle.setCenter(new Tuple<double, double>(playerCircle.center.Item1 + (m_level.playerVectorVelocity.X * 0.1), playerCircle.center.Item2 - (m_level.playerVectorVelocity.Y * 0.1)));
 
             }
+
+            else if (!savedScore)
+            {
+                m_highScoresState.addHighScore(new Tuple<int, DateTime>((int)m_level.playerVectorVelocity.Y, DateTime.Now));
+                saveHighScore(m_highScoresState);
+                savedScore = true;
+            }
         }
         private void onMoveUp(GameTime gameTime)
         {
@@ -332,7 +401,6 @@ namespace LunarLander
                 playerFuel -= 0.002 * gameTime.ElapsedGameTime.TotalMilliseconds;
             }
             isUpPressed = true;
-            //positionY -= 1 * gameTime.ElapsedGameTime.TotalMilliseconds;
         }
 
         public void ModifyKey(KeyEnum keyType, Keys newKey)
@@ -366,7 +434,11 @@ namespace LunarLander
             playerFuel = 20d;
             playerCircle = new Circle(new Tuple<double, double>(50, 50), Math.Max(playerTexture.Width / 2, playerTexture.Height / 2));
 
+            loadControlsAndHighScores();
 
+            ModifyKey(KeyEnum.Up, m_loadedState.Up);
+            ModifyKey(KeyEnum.Left, m_loadedState.Left);
+            ModifyKey(KeyEnum.Right, m_loadedState.Right);
         }
 
         public bool isCollision()
@@ -379,32 +451,6 @@ namespace LunarLander
                 }
 
             }
-
-            
-
-
-            /* function lineCircleIntersection(pt1, pt2, circle)
-             {
-                 let v1 = { x: pt2.x - pt1.x, y: pt2.y - pt1.y };
-         let v2 = { x: pt1.x - circle.center.x, y: pt1.y - circle.center.y };
-         let b = -2 * (v1.x * v2.x + v1.y * v2.y);
-         let c = 2 * (v1.x * v1.x + v1.y * v1.y);
-         let d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.radius * circle.radius));
-     if (isNaN(d)) { // no intercept
-         return false;
-     }
-     // These represent the unit distance of point one and two on the line
-     let u1 = (b - d) / c;
-         let u2 = (b + d) / c;
-     if (u1 <= 1 && u1 >= 0) {  // If point on the line segment
-         return true;
-     }
-     if (u2 <= 1 && u2 >= 0) {  // If point on the line segment
-         return true;
-     }
-     return false;*/
-
-
 
             return false; 
         }
@@ -439,7 +485,41 @@ namespace LunarLander
             return false;
         }
 
+        private void saveHighScore(HighScoresState highScore)
+        {
+            lock (this)
+            {
+                finalizeSaveAsyncHighScores(highScore);
+            }
+        }
 
-    
+        private async Task finalizeSaveAsyncHighScores(HighScoresState state)
+        {
+            await Task.Run(() =>
+            {
+                using (IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    try
+                    {
+                        using (IsolatedStorageFileStream fs = storage.OpenFile("HighScores.json", FileMode.Open))
+                        {
+                            if (fs != null)
+                            {
+                                DataContractJsonSerializer mySerializer = new DataContractJsonSerializer(typeof(HighScoresState));
+                                mySerializer.WriteObject(fs, state);
+                            }
+                        }
+                    }
+                    catch (IsolatedStorageException)
+                    {
+                        // Ideally show something to the user, but this is demo code :)
+                    }
+                }
+
+            });
+        }
+
+
+
     }
 }
