@@ -1,4 +1,5 @@
-﻿using LunarLander.InputHandling;
+﻿using CS5410;
+using LunarLander.InputHandling;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -6,7 +7,10 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.IO.IsolatedStorage;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,6 +32,10 @@ namespace LunarLander
         private Rectangle Left = new Rectangle();
         private Rectangle Right = new Rectangle();
         private Texture2D behindSquare;
+        private bool saving = false;
+        private bool loading = false;
+        private KeyControls m_loadedState = null;
+
         private enum KeySelection
         {
             Up,
@@ -46,6 +54,12 @@ namespace LunarLander
             m_fontMenu = contentManager.Load<SpriteFont>("Fonts/menu");
             m_fontMenuSelect = contentManager.Load<SpriteFont>("Fonts/menu-selected");
             behindSquare = contentManager.Load<Texture2D>("pixil-frame-0 (6)");
+
+            loadSomething();
+
+            up = m_loadedState.Up;
+            left = m_loadedState.Left;
+            right = m_loadedState.Right;
         }
 
         public override GameStateEnum processInput(GameTime gameTime)
@@ -80,14 +94,19 @@ namespace LunarLander
                             if (m_currentSelection == KeySelection.Left)
                             {
                                 left = keys[0];
+                                saveSomething();
                             }
                             else if (m_currentSelection == KeySelection.Up)
                             {
                                 up = keys[0];
+                                saveSomething();
+
                             }
                             else if (m_currentSelection == KeySelection.Right)
                             {
                                 right = keys[0];
+                                saveSomething();
+
                             }
                         }
 
@@ -231,6 +250,103 @@ namespace LunarLander
             
 
             return y + stringSize.Y;
+        }
+
+
+
+        /// <summary>
+        /// Demonstrates how serialize an object to storage
+        /// </summary>
+        private void saveSomething()
+        {
+            lock (this)
+            {
+                if (!this.saving)
+                {
+                    this.saving = true;
+
+                    // Create something to save
+                    KeyControls myState = new KeyControls(this.left, this.right, this.up);
+
+                    // Yes, I know the result is not being saved, I dont' need it
+                    finalizeSaveAsync(myState);
+                }
+            }
+        }
+
+        private async Task finalizeSaveAsync(KeyControls state)
+        {
+            await Task.Run(() =>
+            {
+                using (IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    try
+                    {
+                        using (IsolatedStorageFileStream fs = storage.OpenFile("KeyControls.json", FileMode.Create))
+                        {
+                            if (fs != null)
+                            {
+                                DataContractJsonSerializer mySerializer = new DataContractJsonSerializer(typeof(KeyControls));
+                                mySerializer.WriteObject(fs, state);
+                            }
+                        }
+                    }
+                    catch (IsolatedStorageException)
+                    {
+                        // Ideally show something to the user, but this is demo code :)
+                    }
+                }
+
+                this.saving = false;
+            });
+        }
+
+        /// <summary>
+        /// Demonstrates how to deserialize an object from storage device
+        /// </summary>
+        private void loadSomething()
+        {
+            lock (this)
+            {
+                if (!this.loading)
+                {
+                    this.loading = true;
+                    // Yes, I know the result is not being saved, I dont' need it
+                    var result = finalizeLoadAsync();
+                    result.Wait();
+
+                }
+            }
+        }
+
+        private async Task finalizeLoadAsync()
+        {
+            await Task.Run(() =>
+            {
+                using (IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    try
+                    {
+                        if (storage.FileExists("KeyControls.json"))
+                        {
+                            using (IsolatedStorageFileStream fs = storage.OpenFile("KeyControls.json", FileMode.Open))
+                            {
+                                if (fs != null)
+                                {
+                                    DataContractJsonSerializer mySerializer = new DataContractJsonSerializer(typeof(KeyControls));
+                                    m_loadedState = (KeyControls)mySerializer.ReadObject(fs);
+                                }
+                            }
+                        }
+                    }
+                    catch (IsolatedStorageException)
+                    {
+                        // Ideally show something to the user, but this is demo code :)
+                    }
+                }
+
+                this.loading = false;
+            });
         }
 
         public override void update(GameTime gameTime)

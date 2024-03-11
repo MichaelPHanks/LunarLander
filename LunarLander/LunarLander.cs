@@ -45,6 +45,8 @@ namespace LunarLander
             m_gameStates.Add(GameStateEnum.Paused, new PauseView());
             m_gameStates.Add(GameStateEnum.Settings, m_settings);
 
+            // Initialize highscores and keyboard files, if they do not exist.
+
             foreach (var item in m_gameStates)
             {
                 item.Value.initialize(this.GraphicsDevice, m_graphics);

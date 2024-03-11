@@ -224,7 +224,39 @@ namespace LunarLander
 
 
             // Draw the rectangle behind the player:
-            m_spriteBatch.Draw(backgroundImage, playerRectangle, Color.White);
+
+
+
+            // Draw the edge of the mountains:
+
+            foreach (Line line in m_level.lines)
+            {
+                Vector2 start = new Vector2(line.x1, line.y1); 
+                Vector2 end = new Vector2(line.x2, line.y2); 
+
+                Vector2 edge = end - start;
+                float angle =
+                    (float)Math.Atan2(edge.Y, edge.X);
+
+
+                m_spriteBatch.Draw(t,
+                    new Rectangle(
+                        (int)start.X,
+                        (int)start.Y - 2,
+                        (int)edge.Length() + 1, 
+                        4),
+                    null,
+                    Color.White, 
+                    angle,     
+                    new Vector2(0, 0), 
+                    SpriteEffects.None,
+                    0);
+                
+
+            }
+
+
+
             
             m_spriteBatch.Draw(
                     playerTexture,
@@ -252,15 +284,7 @@ namespace LunarLander
                 new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
             m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + 2*stringSize1.Y), MathHelper.ToDegrees((float)m_level.playerAngle) < 5 || MathHelper.ToDegrees((float)m_level.playerAngle) > 355 ? Color.Green : Color.White);
 
-            // Render the outline of the mountains:
-
-            for (int i = 0; i < m_level.lines.Count; i++)
-            {
-                DrawLine(m_spriteBatch, //draw line
-            new Vector2(m_level.lines[i].x1, m_level.lines[i].y1), //start of line
-            new Vector2(m_level.lines[i].x2, m_level.lines[i].y2) //end of line
-        );
-            }
+            
 
 
             m_spriteBatch.End();
@@ -279,28 +303,7 @@ namespace LunarLander
 
         }
 
-        void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end)
-        {
-            Vector2 edge = end - start;
-            // calculate angle to rotate line
-            float angle =
-                (float)Math.Atan2(edge.Y, edge.X);
-
-
-            sb.Draw(t,
-                new Rectangle(// rectangle defines shape of line and position of start of line
-                    (int)start.X,
-                    (int)start.Y,
-                    (int)edge.Length(), //sb will strech the texture to fill this rectangle
-                    1), //width of line, change this to make thicker line
-                null,
-                Color.Red, //colour of line
-                angle,     //angle of line (calulated above)
-                new Vector2(0, 0), // point in line about which to rotate
-                SpriteEffects.None,
-                0);
-
-        }
+      
 
         public override void update(GameTime gameTime)
         {
@@ -435,6 +438,8 @@ namespace LunarLander
 
             return false;
         }
+
+
     
     }
 }
