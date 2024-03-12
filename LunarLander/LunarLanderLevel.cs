@@ -70,16 +70,16 @@ namespace LunarLander
                 
 
 
-                Line safeZone1 = new Line(width / 5, height / 2, width / 4, height / 2);
+                Line safeZone1 = new Line(width / 5, height / 2, width / 4, height / 2, true);
 
 
-                Line safeZone2 = new Line(width / 2, (int)(height / 1.5), (int)(width / 1.5), (int)(height / 1.5));
+                Line safeZone2 = new Line(width / 2, (int)(height / 1.5), (int)(width / 1.5), (int)(height / 1.5), true);
                 // Create line from beginning to first safe zone, another line from end of first safe zone to
                 // beginning of second safe zone, and a last one from end of second safe zone to end of screen.
 
-                Line firstThird = new Line(0, (int)(height / 1.25), width / 5, height / 2);
-                Line secondThird = new Line(width / 4, height / 2, width / 2, (int)(height / 1.5));
-                Line thirdThird = new Line((int)(width / 1.5), (int)(height / 1.5), width, (int)(height / 1.25));
+                Line firstThird = new Line(0, (int)(height / 1.25), width / 5, height / 2, false);
+                Line secondThird = new Line(width / 4, height / 2, width / 2, (int)(height / 1.5), false);
+                Line thirdThird = new Line((int)(width / 1.5), (int)(height / 1.5), width, (int)(height / 1.25), false);
 
                 lines.Add(firstThird);
                 lines.Add(secondThird);
@@ -269,8 +269,8 @@ namespace LunarLander
                     //startingLines.RemoveAt(j + 2);
 
 
-                    lines1.Add(new Line(lines[j].x1, lines[j].y1, midX, midY));
-                    lines1.Add(new Line(midX, midY, lines[j].x2, lines[j].y2));
+                    lines1.Add(new Line(lines[j].x1, lines[j].y1, midX, midY, false));
+                    lines1.Add(new Line(midX, midY, lines[j].x2, lines[j].y2, false));
 
                     // First line
                     /*startingLines.Insert(j + 1,new Line());

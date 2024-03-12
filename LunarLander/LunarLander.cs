@@ -57,15 +57,10 @@ namespace LunarLander
             m_gameStates.Add(GameStateEnum.HighScores, new HighScoresView());
             m_gameStates.Add(GameStateEnum.Help, new HelpView());
 
-
-            
-
-
-
-                foreach (var item in m_gameStates)
-                {
-                    item.Value.initialize(this.GraphicsDevice, m_graphics);
-                }
+            foreach (var item in m_gameStates)
+            {
+                item.Value.initialize(this.GraphicsDevice, m_graphics);
+            }
 
             m_currentState = m_gameStates[GameStateEnum.MainMenu];
             m_prevState = m_gameStates[GameStateEnum.MainMenu];
@@ -80,7 +75,6 @@ namespace LunarLander
         {
             lock (this)
             {
-
                 initializeFiles();
             }
         }
@@ -108,7 +102,7 @@ namespace LunarLander
                     }
                     catch (IsolatedStorageException)
                     {
-                        // Ideally show something to the user, but this is demo code :)
+
 
                     }
 
@@ -116,7 +110,7 @@ namespace LunarLander
                     {
                         if (!storage.FileExists("HighScores.json"))
                         {
-                            saveDefualtHighScores(new HighScoresState(new List<Tuple<int, DateTime>> { new Tuple<int, DateTime>(10, DateTime.Now) }));
+                            saveDefualtHighScores(new HighScoresState(new List<Tuple<int, DateTime>> { }));
                         }
                     }
                     catch (IsolatedStorageException) { }
@@ -152,7 +146,6 @@ namespace LunarLander
                     }
                     catch (IsolatedStorageException)
                     {
-                        // Ideally show something to the user, but this is demo code :)
                     }
                 }
 

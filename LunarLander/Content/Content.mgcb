@@ -25,6 +25,18 @@
 /processorParam:TextureFormat=Color
 /build:53072881464_d0a95851f1_k.jpg
 
+#begin ball.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:ball.jpg
+
 #begin flbb_3udr_220615.jpg
 /importer:TextureImporter
 /processor:TextureProcessor

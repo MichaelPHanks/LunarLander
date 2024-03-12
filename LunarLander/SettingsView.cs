@@ -215,9 +215,20 @@ namespace LunarLander
 
         private float drawMenuItem(SpriteFont font, string text, float y, Color color, bool outline)
         {
-            Vector2 stringSize = font.MeasureString(text);
-            m_spriteBatch.DrawString(font, text, new Vector2(m_graphics.PreferredBackBufferWidth / 2 - stringSize.X / 2, y), color);
-            
+
+            float scale = m_graphics.PreferredBackBufferWidth / 1980f;
+            Vector2 stringSize = font.MeasureString(text) * scale;
+            m_spriteBatch.DrawString(
+                           font,
+                           text,
+                           new Vector2(m_graphics.PreferredBackBufferWidth / 2 - stringSize.X / 2, y),
+                           color,
+                           0,
+                           Vector2.Zero,
+                           scale,
+                           SpriteEffects.None,
+                           0);
+
             if (text == "Thrust     : " + up.ToString())
             {
                 Up = new Rectangle(((int)m_graphics.PreferredBackBufferWidth / 2 - (int)stringSize.X / 2) - 10, (int)y, (int)stringSize.X + 20, (int)stringSize.Y);

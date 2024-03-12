@@ -91,7 +91,7 @@ namespace LunarLander
 
             foreach (var state in m_loadedState.getHighScores())
             {
-                bottom = drawMenuItem(m_fontMenu, state.Item1.ToString(), bottom, Color.White);
+                bottom = drawMenuItem(m_fontMenu, state.Item1.ToString() + " --- " + state.Item2.ToString(), bottom, Color.White);
             }
             
             m_spriteBatch.End();
@@ -101,8 +101,19 @@ namespace LunarLander
 
         private float drawMenuItem(SpriteFont font, string text, float y, Color color)
         {
-            Vector2 stringSize = font.MeasureString(text);
-            m_spriteBatch.DrawString(font, text, new Vector2(m_graphics.PreferredBackBufferWidth / 2 - stringSize.X / 2, y), color);
+
+            float scale = m_graphics.PreferredBackBufferWidth / 1920f;
+            Vector2 stringSize = font.MeasureString(text) * scale;
+            m_spriteBatch.DrawString(
+                           font,
+                           text,
+                           new Vector2(m_graphics.PreferredBackBufferWidth / 2 - stringSize.X / 2, y),
+                           color,
+                           0,
+                           Vector2.Zero,
+                           scale,
+                           SpriteEffects.None,
+                           0);
 
             return y + stringSize.Y;
         }

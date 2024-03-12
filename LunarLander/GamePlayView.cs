@@ -49,6 +49,8 @@ namespace LunarLander
         private bool firstUpdate = false;
         private bool savedScore = false;
         private Circle playerCircle;
+
+        private Texture2D ball;
         
         public enum Level
         {
@@ -80,11 +82,15 @@ namespace LunarLander
             m_font = contentManager.Load<SpriteFont>("Fonts/menu");
             playerTexture = contentManager.Load<Texture2D>("rocketShip");
             backgroundImage = contentManager.Load<Texture2D>("53072881464_d0a95851f1_k");
-            playerRectangle = new Rectangle(50, 50, playerTexture.Width, playerTexture.Height);
-            playerX = 50f;
-            playerY = 50f;
-            keyboardInput = new KeyboardInput();
+            // Width = 23, Height = 34
 
+            // m_graphics.PreferredBackBufferWidth / 1980 * 23
+
+            playerRectangle = new Rectangle(50, 50, (int)(m_graphics.PreferredBackBufferWidth / 1920f * playerTexture.Width *1.3f), (int)(m_graphics.PreferredBackBufferHeight / 1080f * playerTexture.Height * 1.3f));
+            playerX = m_graphics.PreferredBackBufferWidth / 6;
+            playerY = m_graphics.PreferredBackBufferHeight / 8;
+            keyboardInput = new KeyboardInput();
+            ball = contentManager.Load<Texture2D>("ball");
 
 
             loadControlsAndHighScores();
@@ -114,8 +120,8 @@ namespace LunarLander
                     m_graphics.GraphicsDevice.Viewport.Height, 0,   // doing this to get it to match the default of upper left of (0, 0)
                     0.1f, 2)
             };
-
-            playerCircle = new Circle(new Tuple<double,double>(75, 75), Math.Max(playerTexture.Width / 2, playerTexture.Height / 2));
+         
+            playerCircle = new Circle(new Tuple<double,double>(playerX + playerRectangle.Width / 2, playerY + playerRectangle.Height / 2), playerTexture.Height / 2);
 
         }
 
@@ -314,28 +320,61 @@ namespace LunarLander
                     null, // Drawing the whole texture, not a part
                     Color.White,
                     (float)m_level.playerAngle,
-                    new Vector2(playerTexture.Width / 2, playerTexture.Height / 2),
+                    new Vector2(playerRectangle.Width / 2, playerRectangle.Height / 2),
                     SpriteEffects.None,
                     0);
-            Vector2 stringSize1 = m_font.MeasureString("Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s");
-            m_spriteBatch.DrawString(m_font, "Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s",
-                new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
-            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y), playerFuel > 0 ? Color.Green : Color.White);
 
 
-             stringSize1 = m_font.MeasureString("Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s");
-            m_spriteBatch.DrawString(m_font, "Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s",
-                new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
-            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + stringSize1.Y), Math.Abs(m_level.playerVectorVelocity.Y) > 2 ? Color.White: Color.Green);
 
-
-             stringSize1 = m_font.MeasureString("Angle  : " + string.Format("{0:0.00}",MathHelper.ToDegrees((float)m_level.playerAngle)) + "");
-            m_spriteBatch.DrawString(m_font, "Angle  : " + string.Format("{0:0.00}",MathHelper.ToDegrees((float)m_level.playerAngle)) + "",
-                new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
-            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + 2*stringSize1.Y), MathHelper.ToDegrees((float)m_level.playerAngle) < 5 || MathHelper.ToDegrees((float)m_level.playerAngle) > 355 ? Color.Green : Color.White);
-
+            float scale = m_graphics.PreferredBackBufferWidth / 1920f;
+            
+            Vector2 stringSize1 = m_font.MeasureString("Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s") * scale;
             
 
+
+            m_spriteBatch.DrawString(
+                           m_font,
+                           "Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s",
+                           new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
+            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y),
+                           playerFuel > 0 ? Color.Green : Color.White,
+                           0,
+                           Vector2.Zero,
+                           scale,
+                           SpriteEffects.None,
+                           0);
+
+
+            stringSize1 = m_font.MeasureString("Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s") * scale;
+            
+            m_spriteBatch.DrawString(
+                          m_font,
+                          "Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s",
+                         new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
+            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + stringSize1.Y),
+                          Math.Abs(m_level.playerVectorVelocity.Y) > 2 ? Color.White : Color.Green,
+                          0,
+                          Vector2.Zero,
+                          scale,
+                          SpriteEffects.None,
+                          0);
+
+            stringSize1 = m_font.MeasureString("Angle  : " + string.Format("{0:0.00}",MathHelper.ToDegrees((float)m_level.playerAngle)) + "") * scale;
+            
+            m_spriteBatch.DrawString(
+                          m_font,
+                           "Angle  : " + string.Format("{0:0.00}", MathHelper.ToDegrees((float)m_level.playerAngle)) + "",
+                          new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
+            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + 2 * stringSize1.Y),
+                         MathHelper.ToDegrees((float)m_level.playerAngle) < 5 || MathHelper.ToDegrees((float)m_level.playerAngle) > 355 ? Color.Green : Color.White,
+                          0,
+                          Vector2.Zero,
+                          scale,
+                          SpriteEffects.None,
+                          0);
+
+
+            m_spriteBatch.Draw(ball, new Rectangle((int)playerX, (int)playerY, (int)(playerCircle.radius * 2), (int)(playerCircle.radius * 2)), Color.White);
 
             m_spriteBatch.End();
 
@@ -350,6 +389,7 @@ namespace LunarLander
                     m_level.m_indexTris, 0, m_level.m_indexTris.Length / 3);
             }
 
+            // Render circle thing
 
         }
 
@@ -375,7 +415,7 @@ namespace LunarLander
                 currentLevel = Level.LEVELTWO;
                 currentStage = Stage.PLAYING;
             }
-            if (!isCollision())
+            if (!isCollision().Item1)
             {
                 m_level.playerVectorVelocity += m_level.gravityVector * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.5f;
                 m_level.playerVectorVelocity += m_level.thrustVector * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.5f;
@@ -385,7 +425,7 @@ namespace LunarLander
 
             }
 
-            else if (!savedScore)
+            else if (!savedScore && isCollision().Item2)
             {
                 m_highScoresState.addHighScore(new Tuple<int, DateTime>((int)m_level.playerVectorVelocity.Y, DateTime.Now));
                 saveHighScore(m_highScoresState);
@@ -426,33 +466,35 @@ namespace LunarLander
         }
         public void resetGameplay()
         {
-            playerX = 50f;
-            playerY = 50f;
+          
             currentLevel = Level.LEVELONE;
             currentStage = Stage.PLAYING;
             m_level = new LunarLanderLevel(1, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
             playerFuel = 20d;
-            playerCircle = new Circle(new Tuple<double, double>(50, 50), Math.Max(playerTexture.Width / 2, playerTexture.Height / 2));
 
             loadControlsAndHighScores();
 
             ModifyKey(KeyEnum.Up, m_loadedState.Up);
             ModifyKey(KeyEnum.Left, m_loadedState.Left);
             ModifyKey(KeyEnum.Right, m_loadedState.Right);
+            playerX = m_graphics.PreferredBackBufferWidth / 6;
+            playerY = m_graphics.PreferredBackBufferHeight / 8;
+            playerCircle = new Circle(new Tuple<double, double>(playerX + playerRectangle.Width / 2, playerY + playerRectangle.Height / 2), playerRectangle.Height / 2);
+
         }
 
-        public bool isCollision()
+        public Tuple<bool, bool> isCollision()
         {
             for (int i = 0; i < m_level.lines.Count; i++)
             {
                 if (lineCircleInterSection(m_level.lines[i], playerCircle))
                 { 
-                    return true;
+                    return new Tuple<bool,bool>(true, m_level.lines[i].isSafe);
                 }
 
             }
 
-            return false; 
+            return new Tuple<bool,bool>(false,false); 
         }
 
         public bool lineCircleInterSection(Line line, Circle circle)
