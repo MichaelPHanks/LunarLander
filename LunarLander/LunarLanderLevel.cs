@@ -267,10 +267,7 @@ namespace LunarLander
 
                     int midY = (int)(0.5 * (lines[j].y2 + lines[j].y1) + r);
 
-                    if (midY < m_height / 3)
-                    {
-                        midY = midY;
-                    }
+                    
                     
                    
 

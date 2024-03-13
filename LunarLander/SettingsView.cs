@@ -1,5 +1,4 @@
-﻿using CS5410;
-using LunarLander.InputHandling;
+﻿using LunarLander.InputHandling;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -41,7 +40,6 @@ namespace LunarLander
             Up,
             Left,
             Right,
-            
             None,
         }
         private KeySelection m_currentSelection = KeySelection.None;

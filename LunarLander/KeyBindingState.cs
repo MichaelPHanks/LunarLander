@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace CS5410
+namespace LunarLander
 {
     /// <summary>
     /// This class demonstrates how to create an object that can be serialized

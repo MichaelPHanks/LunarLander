@@ -1,5 +1,4 @@
-﻿using CS5410;
-using LunarLander.InputHandling;
+﻿using LunarLander.InputHandling;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,6 +11,7 @@ using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection.Metadata;
 
 namespace LunarLander
 {
@@ -48,13 +48,19 @@ namespace LunarLander
         private bool firstUpdate = false;
         private bool savedScore = false;
         private Circle playerCircle;
+        private Circle particleCircle;
 
         private Texture2D ball;
+        private bool isCrashed = false;
 
         TimeSpan timePlayed = TimeSpan.Zero;
 
         TimeSpan intervalBetweenLevels = TimeSpan.Zero;
-        
+
+        private ParticleSystem m_particleSystemFire;
+        private ParticleSystemRenderer m_renderFire;
+
+
         public enum Level
         {
             LEVELONE,
@@ -127,9 +133,18 @@ namespace LunarLander
          
             playerCircle = new Circle(new Tuple<double,double>(playerX , playerY), playerTexture.Height / 2);
 
+            m_particleSystemFire = new ParticleSystem(
+                (int)(m_graphics.PreferredBackBufferWidth / 1920f * 10), (int)(m_graphics.PreferredBackBufferWidth / 1920f * 4),
+                (m_graphics.PreferredBackBufferWidth / 1920f * 0.12f), (m_graphics.PreferredBackBufferWidth / 1920f * 0.05f),
+                650, 100);
+            m_renderFire = new ParticleSystemRenderer("fire");
+
+            m_renderFire.LoadContent(contentManager);
+
+
         }
 
-       
+
 
         private void loadControlsAndHighScores()
         {
@@ -273,6 +288,7 @@ namespace LunarLander
         public override void render(GameTime gameTime)
         {
 
+
             // Render the background:
             m_spriteBatch.Begin();
             m_spriteBatch.Draw(backgroundImage, new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight), currentStage == Stage.PLAYING ? Color.White : Color.Gray);
@@ -281,16 +297,18 @@ namespace LunarLander
 
             //m_spriteBatch.Draw(ball, new Rectangle((int)playerX - playerRectangle.Width / 2, (int)playerY - playerRectangle.Height / 2, (int)(playerCircle.radius * 2), (int)(playerCircle.radius * 2)), Color.White);
 
-
-            m_spriteBatch.Draw(
-                    playerTexture,
-                    new Rectangle((int)playerX, (int)playerY, playerRectangle.Width, playerRectangle.Height),
-                    null, // Drawing the whole texture, not a part
-                    Color.White,
-                    (float)m_level.playerAngle,
-                    new Vector2(playerTexture.Width / 2, playerTexture.Height / 2),
-                    SpriteEffects.None,
-                    0);
+            if (!isCrashed)
+            {
+                m_spriteBatch.Draw(
+                        playerTexture,
+                        new Rectangle((int)playerX, (int)playerY, playerRectangle.Width, playerRectangle.Height),
+                        null, // Drawing the whole texture, not a part
+                        Color.White,
+                        (float)m_level.playerAngle,
+                        new Vector2(playerTexture.Width / 2, playerTexture.Height / 2),
+                        SpriteEffects.None,
+                        0);
+            }
 
 
 
@@ -441,6 +459,8 @@ namespace LunarLander
                                0);
             }
             m_spriteBatch.End();
+            m_renderFire.draw(m_spriteBatch, m_particleSystemFire);
+
 
 
 
@@ -450,6 +470,8 @@ namespace LunarLander
 
         public override void update(GameTime gameTime)
         {
+            m_particleSystemFire.update(gameTime);
+
 
             timePlayed += gameTime.ElapsedGameTime;
             if (currentStage == Stage.PLAYING)
@@ -472,11 +494,11 @@ namespace LunarLander
                 
                 if (!isCollision().Item1)
                 {
-                    m_level.playerVectorVelocity += m_level.gravityVector * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.5f;
+                    m_level.playerVectorVelocity +=  m_level.gravityVector * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.5f;
                     m_level.playerVectorVelocity += m_level.thrustVector * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.5f;
-                    playerX += (float)(m_level.playerVectorVelocity.X * 0.1);
-                    playerY -= (float)(m_level.playerVectorVelocity.Y * 0.1);
-                    playerCircle.setCenter(new Tuple<double, double>(playerCircle.center.Item1 + (m_level.playerVectorVelocity.X * 0.1), playerCircle.center.Item2 - (m_level.playerVectorVelocity.Y * 0.1)));
+                    playerX += (float)(m_graphics.PreferredBackBufferWidth / 1920f) * (float)(m_level.playerVectorVelocity.X * 0.1);
+                    playerY -= (float)(m_graphics.PreferredBackBufferHeight / 1080f) * (float)(m_level.playerVectorVelocity.Y * 0.1);
+                    playerCircle.setCenter(new Tuple<double, double>(playerCircle.center.Item1 + (float)(m_graphics.PreferredBackBufferWidth / 1920f) * (m_level.playerVectorVelocity.X * 0.1), playerCircle.center.Item2 - (float)(m_graphics.PreferredBackBufferHeight / 1080f) * (m_level.playerVectorVelocity.Y * 0.1)));
 
                 }
 
@@ -527,6 +549,8 @@ namespace LunarLander
                             currentLevel = Level.LEVELONE;
                             LEVELOVERMESSAGE = "Try going a little slower next time!";
                             timePlayed = TimeSpan.Zero;
+                            shipBlowup();
+                            isCrashed = true;
 
                         }
                     }
@@ -537,6 +561,8 @@ namespace LunarLander
                         currentLevel = Level.LEVELONE;
                         LEVELOVERMESSAGE = "You can't land a ship at an angle!";
                         timePlayed = TimeSpan.Zero;
+                        shipBlowup();
+                        isCrashed = true;
 
 
                     }
@@ -552,6 +578,8 @@ namespace LunarLander
                     currentLevel = Level.LEVELONE;
                     LEVELOVERMESSAGE = "You're not supposed to do that!";
                     timePlayed = TimeSpan.Zero;
+                    shipBlowup();
+                    isCrashed = true;
 
 
 
@@ -572,11 +600,17 @@ namespace LunarLander
                     playerX = m_graphics.PreferredBackBufferWidth / 6;
                     playerY = m_graphics.PreferredBackBufferHeight / 8;
                     playerCircle = new Circle(new Tuple<double, double>(playerX, playerY), playerRectangle.Height / 2);
-
+                    isCrashed = false;
 
                 }
             }
         }
+
+        private void shipBlowup()
+        {
+            m_particleSystemFire.shipCrash(new Vector2((float)playerCircle.center.Item1, (float)playerCircle.center.Item2));
+        }
+
         private void onMoveUp(GameTime gameTime)
         {
             if (currentStage == Stage.PLAYING)
@@ -585,6 +619,9 @@ namespace LunarLander
 
                 if (playerFuel > 0)
                 {
+                    // Add 90 to the degrees to get the 'correct' degrees
+                    m_particleSystemFire.shipThrust((float)m_level.playerAngle, new Vector2((float)(playerCircle.center.Item1 - playerCircle.radius * Math.Cos(m_level.playerAngle - Math.PI/2)), (float)(playerCircle.center.Item2 - playerCircle.radius * Math.Sin(m_level.playerAngle - Math.PI/2))));
+
                     m_level.thrustVector.X += (float)Math.Cos(m_level.playerAngle - Math.PI / 2);
                     m_level.thrustVector.Y -= (float)Math.Sin(m_level.playerAngle - Math.PI / 2);
                     playerFuel -= 0.002 * gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -616,6 +653,7 @@ namespace LunarLander
         }
         public void resetGameplay()
         {
+            // Resets the gameplay without having to remake a gameplayview object.
           
             currentLevel = Level.LEVELONE;
             currentStage = Stage.PLAYING;
@@ -630,6 +668,8 @@ namespace LunarLander
             playerX = m_graphics.PreferredBackBufferWidth / 6;
             playerY = m_graphics.PreferredBackBufferHeight / 8;
             playerCircle = new Circle(new Tuple<double, double>(playerX , playerY), playerRectangle.Height / 2);
+            isCrashed = false;
+
 
         }
 
