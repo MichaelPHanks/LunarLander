@@ -40,8 +40,8 @@ namespace LunarLander
 
 
             //m_graphics.IsFullScreen = true;
-          /*  m_graphics.PreferredBackBufferWidth = 1920;
-            m_graphics.PreferredBackBufferHeight = 1080;*/
+            m_graphics.PreferredBackBufferWidth = 1920;
+            m_graphics.PreferredBackBufferHeight = 1080;
             m_graphics.ApplyChanges();
 
 

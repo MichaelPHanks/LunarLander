@@ -29,19 +29,15 @@ namespace LunarLander
         private double speedVertical;
         private double fuel;
 
-        private int m_height;
 
         public List<Line> lines;
 
-        private VertexPositionColor[] m_vertsTriStrip;
-        private int[] m_indexTriStrip;
 
         private double speedHorizontal { get; set; }
         public LunarLanderLevel(double levelNumber, int width, int height)
         {
 
             lines = new List<Line>();
-            m_height = height;
 
             gravityVector = new Vector2(0f, -9.8f);
             thrustVector = new Vector2(0f,0f);

@@ -39,6 +39,7 @@ namespace LunarLander
         private Keys right;
         private SoundEffect thrustSound;
         private BasicEffect m_effect;
+        private SoundEffect levelClear;
         Texture2D t; //base for the line texture
         private KeyControls m_loadedState = null;
         private HighScoresState m_highScoresState = null;
@@ -97,6 +98,7 @@ namespace LunarLander
             playerTexture = contentManager.Load<Texture2D>("rocketShip");
             backgroundImage = contentManager.Load<Texture2D>("saturnCool");
             thrustSound = contentManager.Load<SoundEffect>("engineThrustSound");
+            levelClear = contentManager.Load<SoundEffect>("levelClearEffect");
             thrustSoundDuration = thrustSound.Duration;
             // Width = 23, Height = 34
 
@@ -482,9 +484,10 @@ namespace LunarLander
             m_particleSystemFire.update(gameTime);
 
 
-            timePlayed += gameTime.ElapsedGameTime;
             if (currentStage == Stage.PLAYING)
             {
+                timePlayed += gameTime.ElapsedGameTime;
+
 
 
 
@@ -520,7 +523,7 @@ namespace LunarLander
                     {
                         if (Math.Abs(m_level.playerVectorVelocity.Y) <= 2)
                         {
-
+                            levelClear.Play();
                             // Once we reach here, we have successfully completed the level and the game is over or we are on to level 2!
 
                             if (currentLevel == Level.LEVELONE)
@@ -553,27 +556,14 @@ namespace LunarLander
                         }
                         else
                         {
-                            currentStage = Stage.COMPLETED;
-                            intervalBetweenLevels += new TimeSpan(0, 0, 4);
-                            currentLevel = Level.LEVELONE;
                             LEVELOVERMESSAGE = "Try going a little slower next time!";
-                            timePlayed = TimeSpan.Zero;
                             shipBlowup();
-                            isCrashed = true;
-
                         }
                     }
-                    else 
+                    else
                     {
-                        currentStage = Stage.COMPLETED;
-                        intervalBetweenLevels += new TimeSpan(0, 0, 4);
-                        currentLevel = Level.LEVELONE;
                         LEVELOVERMESSAGE = "You can't land a ship at that angle!";
-                        timePlayed = TimeSpan.Zero;
                         shipBlowup();
-                        isCrashed = true;
-
-
                     }
 
 
@@ -582,16 +572,8 @@ namespace LunarLander
 
                 else
                 {
-                    currentStage = Stage.COMPLETED;
-                    intervalBetweenLevels += new TimeSpan(0,0,4);
-                    currentLevel = Level.LEVELONE;
                     LEVELOVERMESSAGE = "You're not supposed to do that!";
-                    timePlayed = TimeSpan.Zero;
                     shipBlowup();
-                    isCrashed = true;
-
-
-
                 }
             }
 
@@ -615,8 +597,15 @@ namespace LunarLander
             }
         }
 
+        
+
         private void shipBlowup()
         {
+            currentStage = Stage.COMPLETED;
+            intervalBetweenLevels += new TimeSpan(0, 0, 4);
+            currentLevel = Level.LEVELONE;
+            timePlayed = TimeSpan.Zero;
+            isCrashed = true;
             m_particleSystemFire.shipCrash(new Vector2((float)playerCircle.center.Item1, (float)playerCircle.center.Item2));
         }
 
@@ -645,7 +634,7 @@ namespace LunarLander
 
                     m_level.thrustVector.X += (float)Math.Cos(m_level.playerAngle - Math.PI / 2);
                     m_level.thrustVector.Y -= (float)Math.Sin(m_level.playerAngle - Math.PI / 2);
-                    playerFuel -= 0.002 * gameTime.ElapsedGameTime.TotalMilliseconds;
+                    playerFuel -= gameTime.ElapsedGameTime.TotalSeconds;
                 }
                 isUpPressed = true;
             }
@@ -675,6 +664,7 @@ namespace LunarLander
         public void resetGameplay()
         {
             // Resets the gameplay without having to remake a gameplayview object.
+            timePlayed = TimeSpan.Zero;
             intervalBetweenLevels = TimeSpan.Zero;
             currentLevel = Level.LEVELONE;
             currentStage = Stage.PLAYING;
