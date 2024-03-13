@@ -36,7 +36,7 @@ namespace LunarLander
         public void addHighScore(Tuple<int, DateTime> score)
         {
             HighScores.Add(score);
-            HighScores = HighScores.OrderByDescending(tuple => tuple.Item1).ToList();
+            HighScores = HighScores.OrderBy(tuple => tuple.Item1).ToList();
         }
 
         public List<Tuple<int,DateTime>> getHighScores()

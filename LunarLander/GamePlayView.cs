@@ -18,8 +18,8 @@ namespace LunarLander
     public class GamePlayView : GameStateView
     {
         private SpriteFont m_font;
-        private const string MESSAGE = "I wrote this amazing game";
-        private const string MESSAGE2 = "C to continue, ESC to go to main menu";
+        private string LEVELOVERMESSAGE = "";
+
         private const float RECTANGLE2_ROTATION_RATE = MathHelper.Pi / 4;  // radians per second
         private Texture2D backgroundImage;
         LunarLanderLevel m_level;
@@ -36,8 +36,7 @@ namespace LunarLander
         private Keys up;
         private Keys left;
         private Keys right;
-        private const double PLAYERWIDTH = 1920;
-        private const double PLAYERHEIGHT = 1080;
+        
         private BasicEffect m_effect;
         Texture2D t; //base for the line texture
         private KeyControls m_loadedState = null;
@@ -51,6 +50,10 @@ namespace LunarLander
         private Circle playerCircle;
 
         private Texture2D ball;
+
+        TimeSpan timePlayed = TimeSpan.Zero;
+
+        TimeSpan intervalBetweenLevels = TimeSpan.Zero;
         
         public enum Level
         {
@@ -86,9 +89,10 @@ namespace LunarLander
 
             // m_graphics.PreferredBackBufferWidth / 1980 * 23
 
-            playerRectangle = new Rectangle(50, 50, (int)(m_graphics.PreferredBackBufferWidth / 1920f * playerTexture.Width *1.3f), (int)(m_graphics.PreferredBackBufferHeight / 1080f * playerTexture.Height * 1.3f));
             playerX = m_graphics.PreferredBackBufferWidth / 6;
             playerY = m_graphics.PreferredBackBufferHeight / 8;
+            playerRectangle = new Rectangle((int)playerX, (int)playerY, (int)(m_graphics.PreferredBackBufferWidth / 1920f * playerTexture.Width * 1.5f), (int)(m_graphics.PreferredBackBufferHeight / 1080f * playerTexture.Height * 1.5f));
+
             keyboardInput = new KeyboardInput();
             ball = contentManager.Load<Texture2D>("ball");
 
@@ -121,7 +125,7 @@ namespace LunarLander
                     0.1f, 2)
             };
          
-            playerCircle = new Circle(new Tuple<double,double>(playerX + playerRectangle.Width / 2, playerY + playerRectangle.Height / 2), playerTexture.Height / 2);
+            playerCircle = new Circle(new Tuple<double,double>(playerX , playerY), playerTexture.Height / 2);
 
         }
 
@@ -190,20 +194,28 @@ namespace LunarLander
 
         private void onMoveRight(GameTime gameTime)
         {
-            m_level.playerAngle += (RECTANGLE2_ROTATION_RATE * gameTime.ElapsedGameTime.TotalMilliseconds / 250.0f);
-            if (m_level.playerAngle > 2 * Math.PI)
+            if (currentStage == Stage.PLAYING)
             {
-                m_level.playerAngle -= 2 * Math.PI;
+
+                m_level.playerAngle += (RECTANGLE2_ROTATION_RATE * gameTime.ElapsedGameTime.TotalMilliseconds / 250.0f);
+                if (m_level.playerAngle > 2 * Math.PI)
+                {
+                    m_level.playerAngle -= 2 * Math.PI;
+                }
             }
            
         }
 
         private void onMoveLeft(GameTime gameTime)
         {
-            m_level.playerAngle -= (RECTANGLE2_ROTATION_RATE * gameTime.ElapsedGameTime.TotalMilliseconds / 250.0f);
-            if (m_level.playerAngle < 0)
+            if (currentStage == Stage.PLAYING)
             {
-                m_level.playerAngle += 2 * Math.PI;
+
+                m_level.playerAngle -= (RECTANGLE2_ROTATION_RATE * gameTime.ElapsedGameTime.TotalMilliseconds / 250.0f);
+                if (m_level.playerAngle < 0)
+                {
+                    m_level.playerAngle += 2 * Math.PI;
+                }
             }
 
           
@@ -263,64 +275,20 @@ namespace LunarLander
 
             // Render the background:
             m_spriteBatch.Begin();
-            m_spriteBatch.Draw(backgroundImage, new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight), Color.White);
-
-            if (currentLevel == Level.LEVELONE)
-            {
-                
-            }
-            else if (currentLevel == Level.LEVELTWO) 
-            { 
-                
-            }
-           
-
-
-            // Render the fuel, speed, and angle.
-
-
-            // Draw the rectangle behind the player:
+            m_spriteBatch.Draw(backgroundImage, new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight), currentStage == Stage.PLAYING ? Color.White : Color.Gray);
 
 
 
-            // Draw the edge of the mountains:
-
-            foreach (Line line in m_level.lines)
-            {
-                Vector2 start = new Vector2(line.x1, line.y1); 
-                Vector2 end = new Vector2(line.x2, line.y2); 
-
-                Vector2 edge = end - start;
-                float angle =
-                    (float)Math.Atan2(edge.Y, edge.X);
+            //m_spriteBatch.Draw(ball, new Rectangle((int)playerX - playerRectangle.Width / 2, (int)playerY - playerRectangle.Height / 2, (int)(playerCircle.radius * 2), (int)(playerCircle.radius * 2)), Color.White);
 
 
-                m_spriteBatch.Draw(t,
-                    new Rectangle(
-                        (int)start.X,
-                        (int)start.Y - 2,
-                        (int)edge.Length() + 1, 
-                        4),
-                    null,
-                    Color.White, 
-                    angle,     
-                    new Vector2(0, 0), 
-                    SpriteEffects.None,
-                    0);
-                
-
-            }
-
-
-
-            
             m_spriteBatch.Draw(
                     playerTexture,
                     new Rectangle((int)playerX, (int)playerY, playerRectangle.Width, playerRectangle.Height),
                     null, // Drawing the whole texture, not a part
                     Color.White,
                     (float)m_level.playerAngle,
-                    new Vector2(playerRectangle.Width / 2, playerRectangle.Height / 2),
+                    new Vector2(playerTexture.Width / 2, playerTexture.Height / 2),
                     SpriteEffects.None,
                     0);
 
@@ -373,8 +341,31 @@ namespace LunarLander
                           SpriteEffects.None,
                           0);
 
+            foreach (Line line in m_level.lines)
+            {
+                Vector2 start = new Vector2(line.x1, line.y1);
+                Vector2 end = new Vector2(line.x2, line.y2);
 
-            m_spriteBatch.Draw(ball, new Rectangle((int)playerX, (int)playerY, (int)(playerCircle.radius * 2), (int)(playerCircle.radius * 2)), Color.White);
+                Vector2 edge = end - start;
+                float angle =
+                    (float)Math.Atan2(edge.Y, edge.X);
+
+
+                m_spriteBatch.Draw(t,
+                    new Rectangle(
+                        (int)start.X,
+                        (int)start.Y - 2,
+                        (int)edge.Length() + 1,
+                        4),
+                    null,
+                    Color.White,
+                    angle,
+                    new Vector2(0, 0),
+                    SpriteEffects.None,
+                    0);
+
+
+            }
 
             m_spriteBatch.End();
 
@@ -388,59 +379,218 @@ namespace LunarLander
                     m_level.m_vertsTris, 0, m_level.m_vertsTris.Length,
                     m_level.m_indexTris, 0, m_level.m_indexTris.Length / 3);
             }
+            m_spriteBatch.Begin();
 
-            // Render circle thing
+            if (currentStage == Stage.COMPLETED)
+            {
+                // Render the level over message & time until 'next' level.
+                float scale1 = m_graphics.PreferredBackBufferWidth / 1920f;
+
+                Vector2 stringSize2 = m_font.MeasureString(LEVELOVERMESSAGE) * scale1;
+
+
+
+                m_spriteBatch.DrawString(
+                               m_font,
+                               LEVELOVERMESSAGE,
+                               new Vector2(m_graphics.PreferredBackBufferWidth / 2 - stringSize2.X / 2,
+                m_graphics.PreferredBackBufferHeight / 1.5f - stringSize2.Y),
+                               Color.White,
+                               0,
+                               Vector2.Zero,
+                               scale1,
+                               SpriteEffects.None,
+                               0);
+
+
+                stringSize2 = m_font.MeasureString(intervalBetweenLevels.Seconds.ToString()) * scale;
+
+                m_spriteBatch.DrawString(
+                              m_font,
+                             intervalBetweenLevels.Seconds.ToString(),
+                             new Vector2(m_graphics.PreferredBackBufferWidth / 2 - stringSize2.X / 2,
+                m_graphics.PreferredBackBufferHeight / 1.5f - stringSize2.Y + stringSize2.Y),
+                              Color.White,
+                              0,
+                              Vector2.Zero,
+                              scale,
+                              SpriteEffects.None,
+                              0);
+
+                // Render the time below it...
+
+            }
+
+            else 
+            {
+                // Render the Level in the top left
+                float scale1 = m_graphics.PreferredBackBufferWidth / 1920f;
+
+                Vector2 stringSize2 = m_font.MeasureString(currentLevel == Level.LEVELONE ? "Level: 1": "Level: 2") * scale1;
+
+                m_spriteBatch.DrawString(
+                               m_font,
+                               currentLevel == Level.LEVELONE ? "Level: 1" : "Level: 2",
+                               new Vector2(m_graphics.PreferredBackBufferWidth / 10 - stringSize2.X / 2,
+                m_graphics.PreferredBackBufferHeight / 10f - stringSize2.Y),
+                               Color.White,
+                               0,
+                               Vector2.Zero,
+                               scale1,
+                               SpriteEffects.None,
+                               0);
+            }
+            m_spriteBatch.End();
+
+
 
         }
 
-      
+
 
         public override void update(GameTime gameTime)
         {
 
-            if (loadKeys && !firstUpdate)
+            timePlayed += gameTime.ElapsedGameTime;
+            if (currentStage == Stage.PLAYING)
             {
-                loadControlsAndHighScores();
 
-                ModifyKey(KeyEnum.Up, m_loadedState.Up);
-                ModifyKey(KeyEnum.Left, m_loadedState.Left);
-                ModifyKey(KeyEnum.Right, m_loadedState.Right);
-                loadKeys = false;
+
+
+                if (loadKeys && !firstUpdate)
+                {
+                    loadControlsAndHighScores();
+
+                    ModifyKey(KeyEnum.Up, m_loadedState.Up);
+                    ModifyKey(KeyEnum.Left, m_loadedState.Left);
+                    ModifyKey(KeyEnum.Right, m_loadedState.Right);
+                    loadKeys = false;
+                }
+
+                firstUpdate = false;
+
+                
+                if (!isCollision().Item1)
+                {
+                    m_level.playerVectorVelocity += m_level.gravityVector * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.5f;
+                    m_level.playerVectorVelocity += m_level.thrustVector * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.5f;
+                    playerX += (float)(m_level.playerVectorVelocity.X * 0.1);
+                    playerY -= (float)(m_level.playerVectorVelocity.Y * 0.1);
+                    playerCircle.setCenter(new Tuple<double, double>(playerCircle.center.Item1 + (m_level.playerVectorVelocity.X * 0.1), playerCircle.center.Item2 - (m_level.playerVectorVelocity.Y * 0.1)));
+
+                }
+
+                else if (isCollision().Item2)
+                {
+                    currentStage = Stage.COMPLETED;
+
+
+                    if (MathHelper.ToDegrees((float)m_level.playerAngle) > 355 || MathHelper.ToDegrees((float)m_level.playerAngle) < 5)
+                    {
+                        if (Math.Abs(m_level.playerVectorVelocity.Y) < 10)
+                        {
+
+                            // Once we reach here, we have successfully completed the level and the game is over or we are on to level 2!
+
+                            if (currentLevel == Level.LEVELONE)
+                            {
+                                // Give a three second counter (3,2,1), and then transition to the second level
+                                intervalBetweenLevels += new TimeSpan(0, 0, 4);
+
+
+                                currentLevel = Level.LEVELTWO;
+                                LEVELOVERMESSAGE = "Level 1 complete, onto level 2!";
+
+
+                            }
+
+                            else
+                            {
+                                // We completed the game, and should add to the highscores. Reset the gameplay after 5 seconds.
+                                m_highScoresState.addHighScore(new Tuple<int, DateTime>((int)timePlayed.TotalMilliseconds, DateTime.Now));
+                                intervalBetweenLevels += new TimeSpan(0, 0, 6);
+
+                                saveHighScore(m_highScoresState);
+                                currentLevel = Level.LEVELONE;
+
+
+                                LEVELOVERMESSAGE = "Level 2 complete, score: " + (int)timePlayed.TotalMilliseconds;
+                                timePlayed = TimeSpan.Zero;
+
+                            }
+
+                        }
+                        else
+                        {
+                            currentStage = Stage.COMPLETED;
+                            intervalBetweenLevels += new TimeSpan(0, 0, 4);
+                            currentLevel = Level.LEVELONE;
+                            LEVELOVERMESSAGE = "Try going a little slower next time!";
+                            timePlayed = TimeSpan.Zero;
+
+                        }
+                    }
+                    else 
+                    {
+                        currentStage = Stage.COMPLETED;
+                        intervalBetweenLevels += new TimeSpan(0, 0, 4);
+                        currentLevel = Level.LEVELONE;
+                        LEVELOVERMESSAGE = "You can't land a ship at an angle!";
+                        timePlayed = TimeSpan.Zero;
+
+
+                    }
+
+
+
+                }
+
+                else
+                {
+                    currentStage = Stage.COMPLETED;
+                    intervalBetweenLevels += new TimeSpan(0,0,4);
+                    currentLevel = Level.LEVELONE;
+                    LEVELOVERMESSAGE = "You're not supposed to do that!";
+                    timePlayed = TimeSpan.Zero;
+
+
+
+                }
             }
 
-            firstUpdate = false;
-
-            if (currentLevel == Level.LEVELONE && currentStage == Stage.COMPLETED)
+            else 
             {
-                currentLevel = Level.LEVELTWO;
-                currentStage = Stage.PLAYING;
-            }
-            if (!isCollision().Item1)
-            {
-                m_level.playerVectorVelocity += m_level.gravityVector * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.5f;
-                m_level.playerVectorVelocity += m_level.thrustVector * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.5f;
-                playerX += (float)(m_level.playerVectorVelocity.X * 0.1);
-                playerY -= (float)(m_level.playerVectorVelocity.Y * 0.1);
-                playerCircle.setCenter(new Tuple<double, double>(playerCircle.center.Item1 + (m_level.playerVectorVelocity.X * 0.1), playerCircle.center.Item2 - (m_level.playerVectorVelocity.Y * 0.1)));
+                intervalBetweenLevels -= gameTime.ElapsedGameTime;
 
-            }
+                if (intervalBetweenLevels.TotalMilliseconds <= 0)
+                {
+                    intervalBetweenLevels = TimeSpan.Zero;
+                    currentStage = Stage.PLAYING;
+                    playerFuel = 20d;
+                    
+                    m_level = new LunarLanderLevel(currentLevel == Level.LEVELONE ? 1: 2, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
+                    playerX = m_graphics.PreferredBackBufferWidth / 6;
+                    playerY = m_graphics.PreferredBackBufferHeight / 8;
+                    playerCircle = new Circle(new Tuple<double, double>(playerX, playerY), playerRectangle.Height / 2);
 
-            else if (!savedScore && isCollision().Item2)
-            {
-                m_highScoresState.addHighScore(new Tuple<int, DateTime>((int)m_level.playerVectorVelocity.Y, DateTime.Now));
-                saveHighScore(m_highScoresState);
-                savedScore = true;
+
+                }
             }
         }
         private void onMoveUp(GameTime gameTime)
         {
-            if (playerFuel > 0)
+            if (currentStage == Stage.PLAYING)
             {
-                m_level.thrustVector.X += (float)Math.Cos(m_level.playerAngle - Math.PI / 2);
-                m_level.thrustVector.Y -= (float)Math.Sin(m_level.playerAngle - Math.PI / 2);
-                playerFuel -= 0.002 * gameTime.ElapsedGameTime.TotalMilliseconds;
+
+
+                if (playerFuel > 0)
+                {
+                    m_level.thrustVector.X += (float)Math.Cos(m_level.playerAngle - Math.PI / 2);
+                    m_level.thrustVector.Y -= (float)Math.Sin(m_level.playerAngle - Math.PI / 2);
+                    playerFuel -= 0.002 * gameTime.ElapsedGameTime.TotalMilliseconds;
+                }
+                isUpPressed = true;
             }
-            isUpPressed = true;
         }
 
         public void ModifyKey(KeyEnum keyType, Keys newKey)
@@ -479,7 +629,7 @@ namespace LunarLander
             ModifyKey(KeyEnum.Right, m_loadedState.Right);
             playerX = m_graphics.PreferredBackBufferWidth / 6;
             playerY = m_graphics.PreferredBackBufferHeight / 8;
-            playerCircle = new Circle(new Tuple<double, double>(playerX + playerRectangle.Width / 2, playerY + playerRectangle.Height / 2), playerRectangle.Height / 2);
+            playerCircle = new Circle(new Tuple<double, double>(playerX , playerY), playerRectangle.Height / 2);
 
         }
 
