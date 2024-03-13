@@ -12,6 +12,7 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection.Metadata;
+using Microsoft.Xna.Framework.Audio;
 
 namespace LunarLander
 {
@@ -36,7 +37,7 @@ namespace LunarLander
         private Keys up;
         private Keys left;
         private Keys right;
-        
+        private SoundEffect thrustSound;
         private BasicEffect m_effect;
         Texture2D t; //base for the line texture
         private KeyControls m_loadedState = null;
@@ -49,9 +50,10 @@ namespace LunarLander
         private bool savedScore = false;
         private Circle playerCircle;
         private Circle particleCircle;
-
+        
         private Texture2D ball;
         private bool isCrashed = false;
+        
 
         TimeSpan timePlayed = TimeSpan.Zero;
 
@@ -59,6 +61,9 @@ namespace LunarLander
 
         private ParticleSystem m_particleSystemFire;
         private ParticleSystemRenderer m_renderFire;
+
+        TimeSpan thrustSoundDuration;
+        TimeSpan thrustDuration;
 
 
         public enum Level
@@ -90,7 +95,9 @@ namespace LunarLander
                 new Color[] { Color.White });
             m_font = contentManager.Load<SpriteFont>("Fonts/menu");
             playerTexture = contentManager.Load<Texture2D>("rocketShip");
-            backgroundImage = contentManager.Load<Texture2D>("53072881464_d0a95851f1_k");
+            backgroundImage = contentManager.Load<Texture2D>("saturnCool");
+            thrustSound = contentManager.Load<SoundEffect>("engineThrustSound");
+            thrustSoundDuration = thrustSound.Duration;
             // Width = 23, Height = 34
 
             // m_graphics.PreferredBackBufferWidth / 1980 * 23
@@ -255,6 +262,8 @@ namespace LunarLander
             {
                 isESCDown = false;
             }
+
+
             
             
 
@@ -451,7 +460,7 @@ namespace LunarLander
                                currentLevel == Level.LEVELONE ? "Level: 1" : "Level: 2",
                                new Vector2(m_graphics.PreferredBackBufferWidth / 10 - stringSize2.X / 2,
                 m_graphics.PreferredBackBufferHeight / 10f - stringSize2.Y),
-                               Color.White,
+                               Color.Black,
                                0,
                                Vector2.Zero,
                                scale1,
@@ -517,7 +526,7 @@ namespace LunarLander
                             if (currentLevel == Level.LEVELONE)
                             {
                                 // Give a three second counter (3,2,1), and then transition to the second level
-                                intervalBetweenLevels += new TimeSpan(0, 0, 4);
+                                  intervalBetweenLevels += new TimeSpan(0, 0, 4);
 
 
                                 currentLevel = Level.LEVELTWO;
@@ -619,6 +628,18 @@ namespace LunarLander
 
                 if (playerFuel > 0)
                 {
+                    /*thrustDuration -= gameTime.ElapsedGameTime;
+
+                    if (thrustDuration.TotalMilliseconds <= thrustSoundDuration.TotalMilliseconds * 0.25)
+                    {
+                        thrustSound.Play();
+                        thrustDuration = thrustSoundDuration;
+                    }*/
+                   
+
+
+
+
                     // Add 90 to the degrees to get the 'correct' degrees
                     m_particleSystemFire.shipThrust((float)m_level.playerAngle, new Vector2((float)(playerCircle.center.Item1 - playerCircle.radius * Math.Cos(m_level.playerAngle - Math.PI/2)), (float)(playerCircle.center.Item2 - playerCircle.radius * Math.Sin(m_level.playerAngle - Math.PI/2))));
 
@@ -654,7 +675,7 @@ namespace LunarLander
         public void resetGameplay()
         {
             // Resets the gameplay without having to remake a gameplayview object.
-          
+            intervalBetweenLevels = TimeSpan.Zero;
             currentLevel = Level.LEVELONE;
             currentStage = Stage.PLAYING;
             m_level = new LunarLanderLevel(1, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);

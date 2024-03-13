@@ -115,27 +115,27 @@ namespace LunarLander
                         Console.WriteLine();
                     }
                     m_vertsTris[i].Position = new Vector3(finalMap[mapCounter].x1, finalMap[mapCounter].y1, 0);
-                    m_vertsTris[i].Color = Microsoft.Xna.Framework.Color.Gray;
+                    m_vertsTris[i].Color = Microsoft.Xna.Framework.Color.DimGray;
                     m_indexTris[i] = i;
 
                     m_vertsTris[i + 1].Position = new Vector3(finalMap[mapCounter].x2, finalMap[mapCounter].y2, 0);
-                    m_vertsTris[i + 1].Color = Microsoft.Xna.Framework.Color.Gray;
+                    m_vertsTris[i + 1].Color = Microsoft.Xna.Framework.Color.DimGray;
                     m_indexTris[i + 1] = i + 1;
 
                     m_vertsTris[i + 2].Position = new Vector3(finalMap[mapCounter].x1, height, 0);
-                    m_vertsTris[i + 2].Color = Microsoft.Xna.Framework.Color.Gray;
+                    m_vertsTris[i + 2].Color = Microsoft.Xna.Framework.Color.DimGray;
                     m_indexTris[i + 2] = i + 2;
 
                     m_vertsTris[i + 3].Position = new Vector3(finalMap[mapCounter].x2, finalMap[mapCounter].y2, 0);
-                    m_vertsTris[i + 3].Color = Microsoft.Xna.Framework.Color.Gray;
+                    m_vertsTris[i + 3].Color = Microsoft.Xna.Framework.Color.DimGray;
                     m_indexTris[i + 3] = i + 3;
 
                     m_vertsTris[i + 4].Position = new Vector3(finalMap[mapCounter].x2, height, 0);
-                    m_vertsTris[i + 4].Color = Microsoft.Xna.Framework.Color.Gray;
+                    m_vertsTris[i + 4].Color = Microsoft.Xna.Framework.Color.DimGray;
                     m_indexTris[i + 4] = i + 4;
 
                     m_vertsTris[i + 5].Position = new Vector3(finalMap[mapCounter].x1, height, 0);
-                    m_vertsTris[i + 5].Color = Microsoft.Xna.Framework.Color.Gray;
+                    m_vertsTris[i + 5].Color = Microsoft.Xna.Framework.Color.DimGray;
                     m_indexTris[i + 5] = i + 5;
                     
 

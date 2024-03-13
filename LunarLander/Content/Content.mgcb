@@ -37,6 +37,30 @@
 /processorParam:TextureFormat=Color
 /build:ball.jpg
 
+#begin blue-space-chromebook-wallpaper.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:blue-space-chromebook-wallpaper.jpg
+
+#begin engineThrust.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:engineThrust.mp3
+
+#begin engineThrustSound.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:engineThrustSound.mp3
+
 #begin fire.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -94,6 +118,12 @@
 /processorParam:Quality=Best
 /build:hoverSoundEffect2.wav
 
+#begin largeRocketThrust.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:largeRocketThrust.mp3
+
 #begin little_robot_sound_factory_multimedia_Click_Electronic_14.mp3
 /importer:Mp3Importer
 /processor:SoundEffectProcessor
@@ -123,4 +153,16 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:rocketShip.png
+
+#begin saturnCool.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:saturnCool.jpg
 
