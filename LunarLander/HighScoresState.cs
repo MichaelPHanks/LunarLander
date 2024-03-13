@@ -37,6 +37,11 @@ namespace LunarLander
         {
             HighScores.Add(score);
             HighScores = HighScores.OrderBy(tuple => tuple.Item1).ToList();
+
+            if (HighScores.Count > 5)
+            {
+                HighScores.RemoveRange(5, HighScores.Count - 5);
+            }
         }
 
         public List<Tuple<int,DateTime>> getHighScores()

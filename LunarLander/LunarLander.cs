@@ -23,6 +23,7 @@ namespace LunarLander
         private SettingsView m_settings;
         private GamePlayView m_gamePlayView;
         private GameStateEnum m_gameState;
+        private HelpView m_helpView;
 
 
         public LunarLander()
@@ -39,14 +40,15 @@ namespace LunarLander
 
 
             //m_graphics.IsFullScreen = true;
-            m_graphics.PreferredBackBufferWidth = 1920;
-            m_graphics.PreferredBackBufferHeight = 1080;
+          /*  m_graphics.PreferredBackBufferWidth = 1920;
+            m_graphics.PreferredBackBufferHeight = 1080;*/
             m_graphics.ApplyChanges();
 
 
             // TODO: Add your initialization logic here
             m_settings = new SettingsView();
             m_gamePlayView = new GamePlayView();
+            m_helpView = new HelpView();
             m_gameStates = new Dictionary<GameStateEnum, IGameState>();
             m_gameStates.Add(GameStateEnum.About, new AboutView());
             m_gameStates.Add(GameStateEnum.MainMenu, new MainMenuView());
@@ -54,7 +56,7 @@ namespace LunarLander
             m_gameStates.Add(GameStateEnum.Paused, new PauseView());
             m_gameStates.Add(GameStateEnum.Settings, m_settings);
             m_gameStates.Add(GameStateEnum.HighScores, new HighScoresView());
-            m_gameStates.Add(GameStateEnum.Help, new HelpView());
+            m_gameStates.Add(GameStateEnum.Help, m_helpView);
 
             foreach (var item in m_gameStates)
             {
@@ -235,6 +237,15 @@ namespace LunarLander
                         m_settings.prevState =m_gameState;
 
                     
+                }
+                
+
+                if (nextStateEnum == GameStateEnum.Help && m_gameState != GameStateEnum.Help)
+                {
+
+                    m_helpView.helpPrevState = m_gameState;
+
+
                 }
 
                 if (nextStateEnum == GameStateEnum.HighScores)

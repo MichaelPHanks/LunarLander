@@ -34,6 +34,7 @@ namespace LunarLander
         private bool saving = false;
         private bool loading = false;
         private KeyControls m_loadedState = null;
+        private Texture2D whiteBackground;
 
         private enum KeySelection
         {
@@ -48,10 +49,11 @@ namespace LunarLander
 
         public override void loadContent(ContentManager contentManager)
         {
-            backgroundImage = contentManager.Load<Texture2D>("53072881464_d0a95851f1_k");
+            backgroundImage = contentManager.Load<Texture2D>("saturnCool");
             m_fontMenu = contentManager.Load<SpriteFont>("Fonts/menu");
             m_fontMenuSelect = contentManager.Load<SpriteFont>("Fonts/menu-selected");
             behindSquare = contentManager.Load<Texture2D>("pixil-frame-0 (6)");
+            whiteBackground = contentManager.Load<Texture2D>("whiteImage");
 
             loadKeyControls();
 
@@ -199,8 +201,26 @@ namespace LunarLander
             m_spriteBatch.Begin();
             m_spriteBatch.Draw(backgroundImage, new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight), Color.Gray);
 
+            float scale1 = m_graphics.PreferredBackBufferWidth / 1920f;
+
+            Vector2 stringSize2 = m_fontMenu.MeasureString("Press ESC To Return") * scale1;
+
+            m_spriteBatch.Draw(whiteBackground, new Rectangle((int)(m_graphics.PreferredBackBufferWidth / 5 - stringSize2.X / 2),
+            (int)(m_graphics.PreferredBackBufferHeight / 10f - stringSize2.Y), (int)stringSize2.X, (int)stringSize2.Y), Color.White);
+
+            m_spriteBatch.DrawString(
+                           m_fontMenu,
+                           "Press ESC To Return",
+                           new Vector2(m_graphics.PreferredBackBufferWidth / 5 - stringSize2.X / 2,
+            m_graphics.PreferredBackBufferHeight / 10f - stringSize2.Y),
+                           Color.Black,
+                           0,
+                           Vector2.Zero,
+                           scale1,
+                           SpriteEffects.None,
+                           0);
             // Display the current Keys and their buttons...
-            float bottom = drawMenuItem(m_fontMenu, "Settings", 100, Color.White, false);
+            float bottom = drawMenuItem(m_fontMenu, "Settings", m_graphics.PreferredBackBufferHeight / 1080f * 100f, Color.White, false);
             bottom = drawMenuItem(m_fontMenu, "Thrust     : " + up.ToString(), bottom, Color.White, m_currentSelection == KeySelection.Up);
 
             bottom = drawMenuItem( m_fontMenu, "Rotate Left: " + left.ToString(), bottom, Color.White, m_currentSelection == KeySelection.Left);

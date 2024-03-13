@@ -385,7 +385,7 @@ namespace LunarLander
                         (int)edge.Length() + 1,
                         4),
                     null,
-                    Color.White,
+                    line.isSafe ? Color.Blue : Color.White,
                     angle,
                     new Vector2(0, 0),
                     SpriteEffects.None,
@@ -518,7 +518,7 @@ namespace LunarLander
 
                     if (MathHelper.ToDegrees((float)m_level.playerAngle) > 355 || MathHelper.ToDegrees((float)m_level.playerAngle) < 5)
                     {
-                        if (Math.Abs(m_level.playerVectorVelocity.Y) < 10)
+                        if (Math.Abs(m_level.playerVectorVelocity.Y) <= 2)
                         {
 
                             // Once we reach here, we have successfully completed the level and the game is over or we are on to level 2!
@@ -568,7 +568,7 @@ namespace LunarLander
                         currentStage = Stage.COMPLETED;
                         intervalBetweenLevels += new TimeSpan(0, 0, 4);
                         currentLevel = Level.LEVELONE;
-                        LEVELOVERMESSAGE = "You can't land a ship at an angle!";
+                        LEVELOVERMESSAGE = "You can't land a ship at that angle!";
                         timePlayed = TimeSpan.Zero;
                         shipBlowup();
                         isCrashed = true;
