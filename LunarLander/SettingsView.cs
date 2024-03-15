@@ -35,7 +35,8 @@ namespace LunarLander
         private bool loading = false;
         private KeyControls m_loadedState = null;
         private Texture2D whiteBackground;
-
+        private bool isEnterUp = false;
+        KeyboardInput keyboard;
         private enum KeySelection
         {
             Up,
@@ -43,7 +44,7 @@ namespace LunarLander
             Right,
             None,
         }
-        private KeySelection m_currentSelection = KeySelection.None;
+        private KeySelection m_currentSelection = KeySelection.Up;
         private KeySelection m_prevSelection = KeySelection.None;
 
 
@@ -54,18 +55,31 @@ namespace LunarLander
             m_fontMenuSelect = contentManager.Load<SpriteFont>("Fonts/menu-selected");
             behindSquare = contentManager.Load<Texture2D>("pixil-frame-0 (6)");
             whiteBackground = contentManager.Load<Texture2D>("whiteImage");
+            keyboard = new KeyboardInput();
 
+            keyboard.registerCommand(Keys.Enter, true, new IInputDevice.CommandDelegate(enterHit));
             loadKeyControls();
 
             up = m_loadedState.Up;
             left = m_loadedState.Left;
             right = m_loadedState.Right;
         }
-
+        public void enterHit(GameTime gameTime)
+        {
+            if (isEnterUp)
+            {
+                isKeySelected = true;
+            }
+            isEnterUp = false;
+        }
         public override GameStateEnum processInput(GameTime gameTime)
         {
-
-
+            keyboard.Update(gameTime);
+           
+            if (Keyboard.GetState().IsKeyUp(Keys.Enter)) 
+            {
+                isEnterUp = true;
+            }
 
             if (!m_waitForKeyRelease)
             {
@@ -80,6 +94,8 @@ namespace LunarLander
                     }
                     else
                     {
+                        isEnterUp = false;
+                        m_waitForKeyRelease = true;
                         return prevState;
                     }
                 }
@@ -87,63 +103,100 @@ namespace LunarLander
                 if (isKeySelected)
                 {
                     Keys[] keys = Keyboard.GetState().GetPressedKeys();
-                    if (keys.Length > 0) 
+                    if (keys.Length > 0)
                     {
-                        if (keys[0] != Keys.Escape)
+                        m_waitForKeyRelease = true;
+
+                        if (keys[0] != Keys.Escape && keys[0] != Keys.Enter)
                         {
                             if (m_currentSelection == KeySelection.Left)
                             {
+                                isKeySelected = false;
+
                                 left = keys[0];
                                 saveKeyControls();
                             }
                             else if (m_currentSelection == KeySelection.Up)
                             {
+                                isKeySelected = false;
+
                                 up = keys[0];
                                 saveKeyControls();
 
                             }
                             else if (m_currentSelection == KeySelection.Right)
                             {
+                                isKeySelected = false;
+
                                 right = keys[0];
                                 saveKeyControls();
 
                             }
                         }
 
-                        isKeySelected = false;
                     }
                 }
+                else
+                {
+                    if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                    {
+                        if (m_currentSelection == KeySelection.Right)
+                        {
+                            m_currentSelection = KeySelection.Up;
+                        }
+                        else
+                        {
+                            m_currentSelection++;
+                        }
+                        m_waitForKeyRelease = true;
+                    }
+                    if (Keyboard.GetState().IsKeyDown(Keys.Up))
+                    {
+                        if (m_currentSelection == KeySelection.Up)
+                        {
+                            m_currentSelection = KeySelection.Right;
+                        }
+                        else
+                        {
+                            m_currentSelection--;
+                        }
+                        m_waitForKeyRelease = true;
+                    }
+                    
+                    if (Up.Contains(Mouse.GetState().Position))
+                    {
+                        if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                        {
+                            isKeySelected = true;
+
+                        }
+                        m_currentSelection = KeySelection.Up;
+
+                    }
+                    else if (Left.Contains(Mouse.GetState().Position))
+                    {
+                        if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                        {
+                            isKeySelected = true;
+
+                        }
+                        m_currentSelection = KeySelection.Left;
+
+                    }
+                    else if (Right.Contains(Mouse.GetState().Position))
+                    {
+                        if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                        {
+                            isKeySelected = true;
+
+                        }
+                        m_currentSelection = KeySelection.Right;
+
+                    }
+
+                }
+
                 
-                if (Keyboard.GetState().IsKeyDown(Keys.Down))
-                {
-                    m_currentSelection++;
-                    m_waitForKeyRelease = true;
-                }
-                if (Keyboard.GetState().IsKeyDown(Keys.Up))
-                {
-                    m_currentSelection--;
-                    m_waitForKeyRelease = true;
-                }
-
-
-
-                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == KeySelection.Left)
-                {
-                    isKeySelected = true;
-                    m_currentSelection = KeySelection.Left;
-                }
-                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == KeySelection.Right)
-                {
-                    isKeySelected = true;
-                    m_currentSelection = KeySelection.Right;
-
-                }
-                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == KeySelection.Up)
-                {
-                    isKeySelected = true;
-                    m_currentSelection = KeySelection.Up;
-
-                }
             }
             else if (Keyboard.GetState().IsKeyUp(Keys.Down) && Keyboard.GetState().IsKeyUp(Keys.Up) && Keyboard.GetState().IsKeyUp(Keys.Escape))
             {
@@ -153,45 +206,19 @@ namespace LunarLander
 
 
 
-                if (Up.Contains(Mouse.GetState().Position))
-                {
-                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-                    {
-                        m_currentSelection = KeySelection.Up;
-                        isKeySelected = true;
-
-                    }
-                }
-                else if (Left.Contains(Mouse.GetState().Position))
-                {
-                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-                    {
-                        m_currentSelection = KeySelection.Left;
-                        isKeySelected = true;
-
-                    }
-                }
-                else if (Right.Contains(Mouse.GetState().Position))
-                {
-                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-                    {
-                        m_currentSelection = KeySelection.Right;
-                        isKeySelected = true;
-
-                    }
-                }
+             
 
 
 
 
-                /*else 
-                {
-                    m_currentSelection = MenuState.None;
-                }*/
+            /*else 
+            {
+                m_currentSelection = MenuState.None;
+            }*/
 
-                
-            
-                return GameStateEnum.Settings;
+
+
+            return GameStateEnum.Settings;
             
         }
 
@@ -220,18 +247,24 @@ namespace LunarLander
                            SpriteEffects.None,
                            0);
             // Display the current Keys and their buttons...
-            float bottom = drawMenuItem(m_fontMenu, "Settings", m_graphics.PreferredBackBufferHeight / 1080f * 100f, Color.White, false);
-            bottom = drawMenuItem(m_fontMenu, "Thrust     : " + up.ToString(), bottom, Color.White, m_currentSelection == KeySelection.Up);
+            float bottom = drawMenuItem(m_fontMenu, "Settings", m_graphics.PreferredBackBufferHeight / 1080f * 100f, Color.Red);
+            bottom = drawMenuItem(m_currentSelection == KeySelection.Up ? m_fontMenuSelect: m_fontMenu, "Thrust     : " + up.ToString(), bottom, m_currentSelection == KeySelection.Up && isKeySelected ? Color.Blue : Color.White);
 
-            bottom = drawMenuItem( m_fontMenu, "Rotate Left: " + left.ToString(), bottom, Color.White, m_currentSelection == KeySelection.Left);
-            bottom = drawMenuItem(m_fontMenu, "Rotate Right: " + right.ToString(), bottom, Color.White, m_currentSelection == KeySelection.Right);
+            bottom = drawMenuItem(m_currentSelection == KeySelection.Left ? m_fontMenuSelect : m_fontMenu, "Rotate Left: " + left.ToString(), bottom, m_currentSelection == KeySelection.Left && isKeySelected ? Color.Blue : Color.White);
+            bottom = drawMenuItem(m_currentSelection == KeySelection.Right ? m_fontMenuSelect : m_fontMenu, "Rotate Right: " + right.ToString(), bottom, m_currentSelection == KeySelection.Right && isKeySelected ? Color.Blue : Color.White);
+
+            bottom = drawMenuItem(m_fontMenu, "Press Enter To Select a Key Binding To Change", bottom + stringSize2.Y, Color.LightGray);
+            bottom = drawMenuItem(m_fontMenu, "Once Blue, Select The Preferred Key For That Control", bottom + stringSize2.Y, Color.LightGray);
+            bottom = drawMenuItem(m_fontMenu, "Press Escape If You Change Your Mind (If Blue)", bottom + stringSize2.Y, Color.LightGray);
+
+
             m_spriteBatch.End();
 
         }
         
 
 
-        private float drawMenuItem(SpriteFont font, string text, float y, Color color, bool outline)
+        private float drawMenuItem(SpriteFont font, string text, float y, Color color)
         {
 
             float scale = m_graphics.PreferredBackBufferWidth / 1980f;
@@ -250,31 +283,17 @@ namespace LunarLander
             if (text == "Thrust     : " + up.ToString())
             {
                 Up = new Rectangle(((int)m_graphics.PreferredBackBufferWidth / 2 - (int)stringSize.X / 2) - 10, (int)y, (int)stringSize.X + 20, (int)stringSize.Y);
-                if (outline && isKeySelected)
-                    if (outline && isKeySelected)
-                {
-                    m_spriteBatch.Draw(behindSquare, Up,Color.White);
-                }
+                    
             }
             if (text == "Rotate Left: " + left.ToString())
             {
                 Left = new Rectangle(((int)m_graphics.PreferredBackBufferWidth / 2 - (int)stringSize.X / 2) - 10, (int)y, (int)stringSize.X + 20, (int)stringSize.Y);
-                if (outline && isKeySelected)
-                    if (outline && isKeySelected)
-                {
-                    m_spriteBatch.Draw(behindSquare, Left, Color.White);
-
-                }
+                    
             }
             if (text == "Rotate Right: " + right.ToString())
             {
                 Right = new Rectangle(((int)m_graphics.PreferredBackBufferWidth / 2 - (int)stringSize.X / 2) - 10, (int)y , (int)stringSize.X + 20, (int)stringSize.Y);
-                if (outline && isKeySelected)
-                {
-                    m_spriteBatch.Draw(behindSquare, Right, Color.White);
-
-
-                }
+                
             }
             
 

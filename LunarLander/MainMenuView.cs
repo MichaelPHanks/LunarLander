@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using LunarLander.InputHandling;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -26,12 +27,19 @@ namespace LunarLander
         private Rectangle help = new Rectangle();
         private Rectangle highScores = new Rectangle();
         private Rectangle settings = new Rectangle();
+        private bool isEnterUp = false;
         SoundEffect hover;
         bool hoverPlaying = false;
         TimeSpan hoverTimer;
         TimeSpan hoverZero;
         SoundEffectInstance soundInstance;
         public bool canUseMouse = false;
+
+        KeyboardInput keyboard;
+
+
+
+        private Song mainSong;
 
         private enum MenuState
         {
@@ -54,47 +62,115 @@ namespace LunarLander
             hover = contentManager.Load<SoundEffect>("little_robot_sound_factory_multimedia_Click_Electronic_14");
             mainBackground = contentManager.Load<Texture2D>("flbb_3udr_220615");
             m_fontTitle = contentManager.Load<SpriteFont>("Fonts/mainmenuTitle");
+            mainSong = contentManager.Load<Song>("ladyofthe80s");
             soundInstance = hover.CreateInstance();
+            MediaPlayer.Play(mainSong);
 
+            keyboard = new KeyboardInput();
+            keyboard.registerCommand(Keys.F, true, new IInputDevice.CommandDelegate(muteSong));
 
 
 
         }
 
+        private void muteSong(GameTime gameTime)
+        {
+            if (MediaPlayer.IsMuted)
+            {
+                MediaPlayer.IsMuted = false;
+            }
+            else 
+            {
+                MediaPlayer.IsMuted = true;
+            }
+        }
+
         public override GameStateEnum processInput(GameTime gameTime)
         {
-            if (!m_waitForKeyRelease)
+            keyboard.Update(gameTime);
+            
+            if (Keyboard.GetState().IsKeyUp(Keys.Enter)) 
+            {
+                isEnterUp = true;
+            }
+            if (MediaPlayer.State == MediaState.Stopped)
+            {
+                MediaPlayer.Play(mainSong);
+                
+            }
+            
+            if (!m_waitForKeyRelease && isEnterUp)
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.Down))
-                { 
-                    m_currentSelection++;
+                {   if (m_currentSelection == MenuState.Quit)
+                    {
+                        m_currentSelection = MenuState.NewGame;
+                    }
+                    else 
+                    {
+                        m_currentSelection++;
+                    }
                     m_waitForKeyRelease = true;
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Up))
                 {
-                    m_currentSelection--;
+                    if (m_currentSelection == MenuState.NewGame)
+                    {
+                        m_currentSelection = MenuState.Quit;
+                    }
+                    else
+                    {
+                        m_currentSelection--;
+                    }
                     m_waitForKeyRelease = true;
                 }
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.NewGame)
                 {
+                    canUseMouse = false;
+                    isEnterUp = false;
+                    MediaPlayer.Stop();
                     return GameStateEnum.GamePlay;
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.HighScores)
                 {
+                    isEnterUp = false;
+                    canUseMouse = false;
+                    MediaPlayer.Stop();
+
                     return GameStateEnum.HighScores;
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.Help)
                 {
+                    isEnterUp = false;
+                    canUseMouse = false;
+                    MediaPlayer.Stop();
+
                     return GameStateEnum.Help;
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.About)
                 {
+                    isEnterUp = false;
+                    canUseMouse = false;
+                    MediaPlayer.Stop();
+
                     return GameStateEnum.About;
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.Quit)
                 {
+                    isEnterUp = false;
+                    canUseMouse = false;
+                    MediaPlayer.Stop();
+
                     return GameStateEnum.Exit;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.Settings)
+                {
+                    isEnterUp = false;
+                    canUseMouse = false;
+                    MediaPlayer.Stop();
+
+                    return GameStateEnum.Settings;
                 }
             }
             else if (Keyboard.GetState().IsKeyUp(Keys.Down) && Keyboard.GetState().IsKeyUp(Keys.Up))
@@ -109,8 +185,9 @@ namespace LunarLander
                 {
                     if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                     {
-                        m_currentSelection = MenuState.None;
                         canUseMouse = false;
+                        MediaPlayer.Stop();
+                        isEnterUp = false;
 
                         return GameStateEnum.GamePlay;
                     }
@@ -123,8 +200,9 @@ namespace LunarLander
                 {
                     if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                     {
-                        m_currentSelection = MenuState.None;
                         canUseMouse = false;
+                        MediaPlayer.Stop();
+                        isEnterUp = false;
 
                         return GameStateEnum.Help;
                     }
@@ -135,8 +213,9 @@ namespace LunarLander
                 {
                     if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                     {
-                        m_currentSelection = MenuState.None;
                         canUseMouse = false;
+                        MediaPlayer.Stop();
+                        isEnterUp = false;
 
                         return GameStateEnum.About;
                     }
@@ -147,8 +226,9 @@ namespace LunarLander
                 {
                     if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                     {
-                        m_currentSelection = MenuState.None;
                         canUseMouse = false;
+                        MediaPlayer.Stop();
+                        isEnterUp = false;
 
                         return GameStateEnum.HighScores;
                     }
@@ -159,8 +239,9 @@ namespace LunarLander
                 {
                     if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                     {
-                        m_currentSelection = MenuState.None;
                         canUseMouse = false;
+                        MediaPlayer.Stop();
+                        isEnterUp = false;
 
                         return GameStateEnum.Exit;
                     }
@@ -172,8 +253,9 @@ namespace LunarLander
                 {
                     if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                     {
-                        m_currentSelection = MenuState.None;
                         canUseMouse = false;
+                        MediaPlayer.Stop();
+                        isEnterUp = false;
 
                         return GameStateEnum.Settings;
                     }
@@ -195,6 +277,14 @@ namespace LunarLander
                 }
                 soundInstance.Play();
 
+            }
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            {
+                canUseMouse = false;
+            }
+            if (Mouse.GetState().LeftButton == ButtonState.Released)
+            {
+                canUseMouse = true;
             }
             m_prevSelection = m_currentSelection;
 
@@ -218,6 +308,24 @@ namespace LunarLander
 
             bottom = drawMenuItem(m_currentSelection == MenuState.About ? m_fontMenuSelect : m_fontMenu, "About", bottom, m_currentSelection == MenuState.About ? Color.White : Color.LightGray);
             drawMenuItem(m_currentSelection == MenuState.Quit ? m_fontMenuSelect : m_fontMenu, "Quit", bottom, m_currentSelection == MenuState.Quit ? Color.White : Color.LightGray);
+
+            // Draw (Press F to Mute/Unmute) in bottom left
+
+            float scale = m_graphics.PreferredBackBufferWidth / 1920f;
+            string text = "Press F to Mute/Unmute";
+            Vector2 stringSize = m_fontMenu.MeasureString(text) * scale;
+            float y = m_graphics.PreferredBackBufferHeight - stringSize.Y  *3;
+            m_spriteBatch.DrawString(
+                           m_fontMenu,
+                           text,
+                           new Vector2(m_graphics.PreferredBackBufferWidth / 16, y),
+                           Color.White,
+                           0,
+                           Vector2.Zero,
+                           scale,
+                           SpriteEffects.None,
+                           0);
+
             m_spriteBatch.End();
 
         }
@@ -271,11 +379,9 @@ namespace LunarLander
 
         public override void update(GameTime gameTime)
         {
-            if (Mouse.GetState().LeftButton == ButtonState.Released)
-            {
-                canUseMouse = true;
-            }
+
             
+
         }
     }
 }

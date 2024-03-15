@@ -82,6 +82,12 @@
 /processorParam:Quality=Best
 /build:hoverSoundEffect2.wav
 
+#begin ladyofthe80s.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:ladyofthe80s.mp3
+
 #begin largeRocketThrust.mp3
 /importer:Mp3Importer
 /processor:SoundEffectProcessor
@@ -99,6 +105,12 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:little_robot_sound_factory_multimedia_Click_Electronic_14.mp3
+
+#begin mixkit-arcade-game-explosion-2759.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:mixkit-arcade-game-explosion-2759.mp3
 
 #begin pixil-frame-0 (6).png
 /importer:TextureImporter
@@ -147,6 +159,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:smoke-2.png
+
+#begin stranger-things-124008.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:stranger-things-124008.mp3
 
 #begin whiteImage.png
 /importer:TextureImporter

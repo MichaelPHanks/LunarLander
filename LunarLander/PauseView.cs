@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,8 @@ namespace LunarLander
         private Rectangle menu = new Rectangle();
         private bool m_waitForKeyRelease = false;
         SoundEffectInstance soundInstance;
-        
+        private bool isEnterUp = false;
+        private bool canUseMouse = false;
 
 
 
@@ -52,41 +54,275 @@ namespace LunarLander
 
         public override GameStateEnum processInput(GameTime gameTime)
         {
+            if (Keyboard.GetState().IsKeyUp(Keys.Enter))
+            {
+                isEnterUp = true;
+            }
+
+            /*
+
+            
+           
+
+            if (!m_waitForKeyRelease && isEnterUp)
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                {
+                    if (m_currentSelection == MenuState.Quit)
+                    {
+                        m_currentSelection = MenuState.NewGame;
+                    }
+                    else
+                    {
+                        m_currentSelection++;
+                    }
+                    m_waitForKeyRelease = true;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Up))
+                {
+                    if (m_currentSelection == MenuState.NewGame)
+                    {
+                        m_currentSelection = MenuState.Quit;
+                    }
+                    else
+                    {
+                        m_currentSelection--;
+                    }
+                    m_waitForKeyRelease = true;
+                }
+
+                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.NewGame)
+                {
+                    isEnterUp = false;
+                    MediaPlayer.Stop();
+                    return GameStateEnum.GamePlay;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.HighScores)
+                {
+                    isEnterUp = false;
+
+                    MediaPlayer.Stop();
+
+                    return GameStateEnum.HighScores;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.Help)
+                {
+                    isEnterUp = false;
+
+                    MediaPlayer.Stop();
+
+                    return GameStateEnum.Help;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.About)
+                {
+                    isEnterUp = false;
+
+                    MediaPlayer.Stop();
+
+                    return GameStateEnum.About;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.Quit)
+                {
+                    isEnterUp = false;
+
+                    MediaPlayer.Stop();
+
+                    return GameStateEnum.Exit;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.Settings)
+                {
+                    isEnterUp = false;
+
+                    MediaPlayer.Stop();
+
+                    return GameStateEnum.Settings;
+                }
+            }
+            else if (Keyboard.GetState().IsKeyUp(Keys.Down) && Keyboard.GetState().IsKeyUp(Keys.Up))
+            {
+                m_waitForKeyRelease = false;
+            }
+
+
+            if (canUseMouse)
+            {
+                if (gameplay.Contains(Mouse.GetState().Position))
+                {
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        m_currentSelection = MenuState.None;
+                        canUseMouse = false;
+                        MediaPlayer.Stop();
+                        isEnterUp = false;
+
+                        return GameStateEnum.GamePlay;
+                    }
+                    m_currentSelection = MenuState.NewGame;
+
+
+
+                }
+                else if (help.Contains(Mouse.GetState().Position))
+                {
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        m_currentSelection = MenuState.None;
+                        canUseMouse = false;
+                        MediaPlayer.Stop();
+                        isEnterUp = false;
+
+                        return GameStateEnum.Help;
+                    }
+                    m_currentSelection = MenuState.Help;
+
+                }
+                else if (about.Contains(Mouse.GetState().Position))
+                {
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        m_currentSelection = MenuState.None;
+                        canUseMouse = false;
+                        MediaPlayer.Stop();
+                        isEnterUp = false;
+
+                        return GameStateEnum.About;
+                    }
+                    m_currentSelection = MenuState.About;
+
+                }
+                else if (highScores.Contains(Mouse.GetState().Position))
+                {
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        m_currentSelection = MenuState.None;
+                        canUseMouse = false;
+                        MediaPlayer.Stop();
+                        isEnterUp = false;
+
+                        return GameStateEnum.HighScores;
+                    }
+                    m_currentSelection = MenuState.HighScores;
+
+                }
+                else if (quit.Contains(Mouse.GetState().Position))
+                {
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        m_currentSelection = MenuState.None;
+                        canUseMouse = false;
+                        MediaPlayer.Stop();
+                        isEnterUp = false;
+
+                        return GameStateEnum.Exit;
+                    }
+                    m_currentSelection = MenuState.Quit;
+
+                }
+
+                else if (settings.Contains(Mouse.GetState().Position))
+                {
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        m_currentSelection = MenuState.None;
+                        canUseMouse = false;
+                        MediaPlayer.Stop();
+                        isEnterUp = false;
+
+                        return GameStateEnum.Settings;
+                    }
+                    m_currentSelection = MenuState.Settings;
+
+                }
+            }
+            *//*else 
+            {
+                m_currentSelection = MenuState.None;
+            }*//*
+
+            if (m_prevSelection != m_currentSelection && m_currentSelection != MenuState.None)
+            {
+                if (soundInstance.State == SoundState.Playing)
+                {
+                    soundInstance.Stop();
+
+                }
+                soundInstance.Play();
+
+            }
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            {
+                canUseMouse = false;
+            }
+            m_prevSelection = m_currentSelection;
+
+            return GameStateEnum.MainMenu;*/
             if (Keyboard.GetState().IsKeyDown(Keys.Escape) && !isESCDown)
             {
                 isESCDown = true;
+                isEnterUp = false;
+
                 return GameStateEnum.GamePlay;
             }
             if (Keyboard.GetState().IsKeyUp(Keys.Escape))
             {
                 isESCDown = false;
             }
-            if (!m_waitForKeyRelease)
+            if (!m_waitForKeyRelease && isEnterUp)
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.Down))
                 {
-                    m_currentSelection++;
+                    if (m_currentSelection == MenuState.Menu)
+                    {
+                      m_currentSelection = MenuState.Settings;
+                    }
+                    else
+                    {
+                        m_currentSelection++;
+                    }
                     m_waitForKeyRelease = true;
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Up))
                 {
-                    m_currentSelection--;
+                    if (m_currentSelection == MenuState.Settings)
+                    {
+                        m_currentSelection = MenuState.Menu;
+                    }
+                    else
+                    {
+                        m_currentSelection--;
+                    }
                     m_waitForKeyRelease = true;
                 }
 
-                
+                if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.Menu)
+                {
+                    isESCDown = true;
+                    isEnterUp = false;
+                    canUseMouse = false;
+                    return GameStateEnum.MainMenu;
+                }
                 
                 if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.Help)
                 {
+                    isESCDown = true;
+                    isEnterUp = false;
+                    canUseMouse = false;
+
                     return GameStateEnum.Help;
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.Settings)
                 {
+                    isESCDown = true;
+                    isEnterUp = false;
+                    canUseMouse = false;
+
                     return GameStateEnum.Settings;
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Enter) && m_currentSelection == MenuState.Resume)
                 {
                     isESCDown = true;
+                    isEnterUp = false;
+                    canUseMouse = false;
 
                     return GameStateEnum.GamePlay;
                 }
@@ -97,56 +333,62 @@ namespace LunarLander
             }
 
 
-            
-            if (settings.Contains(Mouse.GetState().Position))
+            if (canUseMouse)
             {
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                if (settings.Contains(Mouse.GetState().Position))
                 {
-                    m_currentSelection = MenuState.None;
-                    isESCDown = true;
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        isESCDown = true;
+                        isEnterUp = false;
+                        canUseMouse = false;
 
-                    return GameStateEnum.Settings;
+                        return GameStateEnum.Settings;
+                    }
+                    m_currentSelection = MenuState.Settings;
+
+
+
                 }
-                m_currentSelection = MenuState.Settings;
-
-
-
-            }
-            else if (help.Contains(Mouse.GetState().Position))
-            {
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                else if (help.Contains(Mouse.GetState().Position))
                 {
-                    m_currentSelection = MenuState.None;
-                    isESCDown = true;
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        isESCDown = true;
+                        isEnterUp = false;
+                        canUseMouse = false;
 
-                    return GameStateEnum.Help;
+                        return GameStateEnum.Help;
+                    }
+                    m_currentSelection = MenuState.Help;
+
                 }
-                m_currentSelection = MenuState.Help;
-
-            }
-            else if (resume.Contains(Mouse.GetState().Position))
-            {
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                else if (resume.Contains(Mouse.GetState().Position))
                 {
-                    m_currentSelection = MenuState.None;
-                    isESCDown = true;
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        isESCDown = true;
+                        isEnterUp = false;
+                        canUseMouse = false;
 
-                    return GameStateEnum.GamePlay;
+                        return GameStateEnum.GamePlay;
+                    }
+                    m_currentSelection = MenuState.Resume;
+
                 }
-                m_currentSelection = MenuState.Resume;
-
-            }
-            else if (menu.Contains(Mouse.GetState().Position))
-            {
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                else if (menu.Contains(Mouse.GetState().Position))
                 {
-                    m_currentSelection = MenuState.None;
-                    isESCDown = true;
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        isESCDown = true;
+                        isEnterUp = false;
+                        canUseMouse = false;
 
-                    return GameStateEnum.MainMenu;
+                        return GameStateEnum.MainMenu;
+                    }
+                    m_currentSelection = MenuState.Menu;
+
                 }
-                m_currentSelection = MenuState.Menu;
-
             }
 
 
@@ -165,6 +407,14 @@ namespace LunarLander
                 }
                 soundInstance.Play();
 
+            }
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            {
+                canUseMouse = false;
+            }
+            if (Mouse.GetState().LeftButton == ButtonState.Released)
+            {
+                canUseMouse = true;
             }
             m_prevSelection = m_currentSelection;
 

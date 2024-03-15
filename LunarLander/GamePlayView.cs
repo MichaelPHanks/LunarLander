@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection.Metadata;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace LunarLander
 {
@@ -38,8 +39,10 @@ namespace LunarLander
         private Keys left;
         private Keys right;
         private SoundEffect thrustSound;
+        private SoundEffect explosionEffect;
         private BasicEffect m_effect;
         private SoundEffect levelClear;
+        private SoundEffectInstance SoundEffectInstance;
         Texture2D t; //base for the line texture
         private KeyControls m_loadedState = null;
         private HighScoresState m_highScoresState = null;
@@ -64,6 +67,8 @@ namespace LunarLander
         private ParticleSystem m_particleSystemSmoke;
         private ParticleSystemRenderer m_renderFire;
         private ParticleSystemRenderer m_renderSmoke;
+
+        private Song gamePlaySong;
 
 
         TimeSpan thrustSoundDuration;
@@ -102,6 +107,9 @@ namespace LunarLander
             backgroundImage = contentManager.Load<Texture2D>("saturnCool");
             thrustSound = contentManager.Load<SoundEffect>("engineThrustSound");
             levelClear = contentManager.Load<SoundEffect>("levelClearEffect");
+            explosionEffect = contentManager.Load<SoundEffect>("mixkit-arcade-game-explosion-2759");
+            SoundEffectInstance = thrustSound.CreateInstance();
+            SoundEffectInstance.IsLooped = true;
             thrustSoundDuration = thrustSound.Duration;
             // Width = 23, Height = 34
 
@@ -258,6 +266,7 @@ namespace LunarLander
 
         public override GameStateEnum processInput(GameTime gameTime)
         {
+
             keyboardInput.Update(gameTime);
 
             if (Keyboard.GetState().IsKeyDown(Keys.Escape) && !isESCDown)
@@ -612,6 +621,7 @@ namespace LunarLander
 
         private void shipBlowup()
         {
+            explosionEffect.Play();
             currentStage = Stage.COMPLETED;
             intervalBetweenLevels += new TimeSpan(0, 0, 4);
             currentLevel = Level.LEVELONE;
@@ -636,7 +646,8 @@ namespace LunarLander
                         thrustSound.Play();
                         thrustDuration = thrustSoundDuration;
                     }*/
-                   
+                    //SoundEffectInstance.Play();
+
 
 
 

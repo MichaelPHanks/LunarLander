@@ -66,6 +66,9 @@ namespace LunarLander
             bottom = drawMenuItem(m_font, "Sound Effects - Miketa (Also the internet)", bottom + stringSize2.Y, Color.LightGray);
             bottom = drawMenuItem(m_font, "Images - The Internet", bottom + stringSize2.Y, Color.LightGray);
             bottom = drawMenuItem(m_font, "Rocket Ship - Miketa (Internet Inspired)", bottom + stringSize2.Y, Color.LightGray);
+            bottom = drawMenuItem(m_font, "I made this game because I had to", bottom + stringSize2.Y, Color.LightGray);
+            bottom = drawMenuItem(m_font, "It was really fun making it tho tbh", bottom + stringSize2.Y, Color.LightGray);
+
 
 
 
