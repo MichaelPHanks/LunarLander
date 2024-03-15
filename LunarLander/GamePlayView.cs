@@ -61,7 +61,10 @@ namespace LunarLander
         TimeSpan intervalBetweenLevels = TimeSpan.Zero;
 
         private ParticleSystem m_particleSystemFire;
+        private ParticleSystem m_particleSystemSmoke;
         private ParticleSystemRenderer m_renderFire;
+        private ParticleSystemRenderer m_renderSmoke;
+
 
         TimeSpan thrustSoundDuration;
         TimeSpan thrustDuration;
@@ -140,15 +143,23 @@ namespace LunarLander
                     0.1f, 2)
             };
          
-            playerCircle = new Circle(new Tuple<double,double>(playerX , playerY), playerTexture.Height / 2);
+            playerCircle = new Circle(new Tuple<double,double>(playerX , playerY), playerRectangle.Height / 2);
 
             m_particleSystemFire = new ParticleSystem(
                 (int)(m_graphics.PreferredBackBufferWidth / 1920f * 10), (int)(m_graphics.PreferredBackBufferWidth / 1920f * 4),
-                (m_graphics.PreferredBackBufferWidth / 1920f * 0.12f), (m_graphics.PreferredBackBufferWidth / 1920f * 0.05f),
+                (m_graphics.PreferredBackBufferWidth / 1920f * 0.12f), (m_graphics.PreferredBackBufferWidth / 1920f * 0.03f),
                 650, 100);
+            
             m_renderFire = new ParticleSystemRenderer("fire");
+            m_particleSystemSmoke = new ParticleSystem(
+                (int)(m_graphics.PreferredBackBufferWidth / 1920f * 10), (int)(m_graphics.PreferredBackBufferWidth / 1920f * 4),
+                (m_graphics.PreferredBackBufferWidth / 1920f * 0.12f), (m_graphics.PreferredBackBufferWidth / 1920f * 0.03f),
+                650, 100);
+            m_renderSmoke = new ParticleSystemRenderer("smoke-2");
+
 
             m_renderFire.LoadContent(contentManager);
+            m_renderSmoke.LoadContent(contentManager);
 
 
         }
@@ -305,7 +316,6 @@ namespace LunarLander
             m_spriteBatch.Draw(backgroundImage, new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight), currentStage == Stage.PLAYING ? Color.White : Color.Gray);
 
 
-
             //m_spriteBatch.Draw(ball, new Rectangle((int)playerX - playerRectangle.Width / 2, (int)playerY - playerRectangle.Height / 2, (int)(playerCircle.radius * 2), (int)(playerCircle.radius * 2)), Color.White);
 
             if (!isCrashed)
@@ -320,55 +330,6 @@ namespace LunarLander
                         SpriteEffects.None,
                         0);
             }
-
-
-
-            float scale = m_graphics.PreferredBackBufferWidth / 1920f;
-            
-            Vector2 stringSize1 = m_font.MeasureString("Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s") * scale;
-            
-
-
-            m_spriteBatch.DrawString(
-                           m_font,
-                           "Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s",
-                           new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
-            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y),
-                           playerFuel > 0 ? Color.Green : Color.White,
-                           0,
-                           Vector2.Zero,
-                           scale,
-                           SpriteEffects.None,
-                           0);
-
-
-            stringSize1 = m_font.MeasureString("Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s") * scale;
-            
-            m_spriteBatch.DrawString(
-                          m_font,
-                          "Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s",
-                         new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
-            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + stringSize1.Y),
-                          Math.Abs(m_level.playerVectorVelocity.Y) > 2 ? Color.White : Color.Green,
-                          0,
-                          Vector2.Zero,
-                          scale,
-                          SpriteEffects.None,
-                          0);
-
-            stringSize1 = m_font.MeasureString("Angle  : " + string.Format("{0:0.00}",MathHelper.ToDegrees((float)m_level.playerAngle)) + "") * scale;
-            
-            m_spriteBatch.DrawString(
-                          m_font,
-                           "Angle  : " + string.Format("{0:0.00}", MathHelper.ToDegrees((float)m_level.playerAngle)) + "",
-                          new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
-            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + 2 * stringSize1.Y),
-                         MathHelper.ToDegrees((float)m_level.playerAngle) < 5 || MathHelper.ToDegrees((float)m_level.playerAngle) > 355 ? Color.Green : Color.White,
-                          0,
-                          Vector2.Zero,
-                          scale,
-                          SpriteEffects.None,
-                          0);
 
             foreach (Line line in m_level.lines)
             {
@@ -409,6 +370,53 @@ namespace LunarLander
                     m_level.m_indexTris, 0, m_level.m_indexTris.Length / 3);
             }
             m_spriteBatch.Begin();
+            float scale = m_graphics.PreferredBackBufferWidth / 1920f;
+
+            Vector2 stringSize1 = m_font.MeasureString("Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s") * scale;
+
+
+
+            m_spriteBatch.DrawString(
+                           m_font,
+                           "Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s",
+                           new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
+            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y),
+                           playerFuel > 0 ? Color.Green : Color.White,
+                           0,
+                           Vector2.Zero,
+                           scale,
+                           SpriteEffects.None,
+                           0);
+
+
+            stringSize1 = m_font.MeasureString("Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s") * scale;
+
+            m_spriteBatch.DrawString(
+                          m_font,
+                          "Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s",
+                         new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
+            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + stringSize1.Y),
+                          Math.Abs(m_level.playerVectorVelocity.Y) > 2 ? Color.White : Color.Green,
+                          0,
+                          Vector2.Zero,
+                          scale,
+                          SpriteEffects.None,
+                          0);
+
+            stringSize1 = m_font.MeasureString("Angle  : " + string.Format("{0:0.00}", MathHelper.ToDegrees((float)m_level.playerAngle)) + "") * scale;
+
+            m_spriteBatch.DrawString(
+                          m_font,
+                           "Angle  : " + string.Format("{0:0.00}", MathHelper.ToDegrees((float)m_level.playerAngle)) + "",
+                          new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
+            m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + 2 * stringSize1.Y),
+                         MathHelper.ToDegrees((float)m_level.playerAngle) < 5 || MathHelper.ToDegrees((float)m_level.playerAngle) > 355 ? Color.Green : Color.White,
+                          0,
+                          Vector2.Zero,
+                          scale,
+                          SpriteEffects.None,
+                          0);
+
 
             if (currentStage == Stage.COMPLETED)
             {
@@ -470,6 +478,8 @@ namespace LunarLander
                                0);
             }
             m_spriteBatch.End();
+            m_renderSmoke.draw(m_spriteBatch, m_particleSystemSmoke);
+
             m_renderFire.draw(m_spriteBatch, m_particleSystemFire);
 
 
@@ -482,6 +492,7 @@ namespace LunarLander
         public override void update(GameTime gameTime)
         {
             m_particleSystemFire.update(gameTime);
+            m_particleSystemSmoke.update(gameTime);
 
 
             if (currentStage == Stage.PLAYING)
@@ -529,7 +540,7 @@ namespace LunarLander
                             if (currentLevel == Level.LEVELONE)
                             {
                                 // Give a three second counter (3,2,1), and then transition to the second level
-                                  intervalBetweenLevels += new TimeSpan(0, 0, 4);
+                                intervalBetweenLevels += new TimeSpan(0, 0, 4);
 
 
                                 currentLevel = Level.LEVELTWO;
@@ -541,14 +552,14 @@ namespace LunarLander
                             else
                             {
                                 // We completed the game, and should add to the highscores. Reset the gameplay after 5 seconds.
-                                m_highScoresState.addHighScore(new Tuple<int, DateTime>((int)timePlayed.TotalMilliseconds, DateTime.Now));
+                                m_highScoresState.addHighScore(new Tuple<int, DateTime>((int)(timePlayed.TotalMilliseconds), DateTime.Now));
                                 intervalBetweenLevels += new TimeSpan(0, 0, 6);
 
                                 saveHighScore(m_highScoresState);
                                 currentLevel = Level.LEVELONE;
 
 
-                                LEVELOVERMESSAGE = "Level 2 complete, score: " + (int)timePlayed.TotalMilliseconds;
+                                LEVELOVERMESSAGE = "Level 2 complete, score: " + (int)(timePlayed.TotalMilliseconds);
                                 timePlayed = TimeSpan.Zero;
 
                             }
@@ -607,6 +618,7 @@ namespace LunarLander
             timePlayed = TimeSpan.Zero;
             isCrashed = true;
             m_particleSystemFire.shipCrash(new Vector2((float)playerCircle.center.Item1, (float)playerCircle.center.Item2));
+            m_particleSystemSmoke.shipCrash(new Vector2((float)playerCircle.center.Item1, (float)playerCircle.center.Item2));
         }
 
         private void onMoveUp(GameTime gameTime)
@@ -631,7 +643,7 @@ namespace LunarLander
 
                     // Add 90 to the degrees to get the 'correct' degrees
                     m_particleSystemFire.shipThrust((float)m_level.playerAngle, new Vector2((float)(playerCircle.center.Item1 - playerCircle.radius * Math.Cos(m_level.playerAngle - Math.PI/2)), (float)(playerCircle.center.Item2 - playerCircle.radius * Math.Sin(m_level.playerAngle - Math.PI/2))));
-
+                    m_particleSystemSmoke.shipThrust((float)m_level.playerAngle, new Vector2((float)(playerCircle.center.Item1 - playerCircle.radius * Math.Cos(m_level.playerAngle - Math.PI / 2)), (float)(playerCircle.center.Item2 - playerCircle.radius * Math.Sin(m_level.playerAngle - Math.PI / 2))));
                     m_level.thrustVector.X += (float)Math.Cos(m_level.playerAngle - Math.PI / 2);
                     m_level.thrustVector.Y -= (float)Math.Sin(m_level.playerAngle - Math.PI / 2);
                     playerFuel -= gameTime.ElapsedGameTime.TotalSeconds;

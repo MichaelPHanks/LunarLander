@@ -49,7 +49,11 @@ namespace LunarLander
             for (int i = 0; i < 6; i++)
             {
                 Random random = new Random();
-                float angle = (float)(random.NextDouble() * Math.PI / 3) + playerAngle + (float)(Math.PI / 4);
+                float offset = (float)Math.PI / 2;
+                float angle = (float)(random.NextDouble()) ;
+                angle *= offset;
+                angle += playerAngle;
+                angle += (float)Math.PI / 4;
                 float x = (float)Math.Cos(angle);
                 float y = (float)Math.Sin(angle);
                 var particle = create(center, new Vector2(x,y));

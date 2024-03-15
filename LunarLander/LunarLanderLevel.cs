@@ -32,7 +32,7 @@ namespace LunarLander
 
         public List<Line> lines;
 
-
+        private int m_height;
         private double speedHorizontal { get; set; }
         public LunarLanderLevel(double levelNumber, int width, int height)
         {
@@ -44,7 +44,7 @@ namespace LunarLander
             horizontalVector = new Vector2(0f,0f);
             playerVectorVelocity = new Vector2(0f,0f);
             playerAngle = Math.PI / 2;
-
+            m_height = height;
 
 
            
@@ -263,7 +263,10 @@ namespace LunarLander
 
                     int midY = (int)(0.5 * (lines[j].y2 + lines[j].y1) + r);
 
-                    
+                    if (midY <= m_height / 3)
+                    {
+                        midY = m_height / 3  + 1;
+                    }
                     
                    
 
