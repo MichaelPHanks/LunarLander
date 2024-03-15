@@ -21,7 +21,7 @@ namespace LunarLander
         {
             backgroundImage = contentManager.Load<Texture2D>("flbb_3udr_220615");
             backgroundRect = new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
-            m_font = contentManager.Load<SpriteFont>("Fonts/menu");
+            m_font = contentManager.Load<SpriteFont>("Fonts/voicActivatedFont");
             whiteBackground = contentManager.Load<Texture2D>("whiteImage");
         }
 

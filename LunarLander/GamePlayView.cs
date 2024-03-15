@@ -102,7 +102,7 @@ namespace LunarLander
             t = new Texture2D(m_graphics.GraphicsDevice, 1, 1);
             t.SetData<Color>(
                 new Color[] { Color.White });
-            m_font = contentManager.Load<SpriteFont>("Fonts/menu");
+            m_font = contentManager.Load<SpriteFont>("Fonts/voicActivatedFont");
             playerTexture = contentManager.Load<Texture2D>("rocketShip");
             backgroundImage = contentManager.Load<Texture2D>("saturnCool");
             thrustSound = contentManager.Load<SoundEffect>("engineThrustSound");
@@ -120,7 +120,6 @@ namespace LunarLander
             playerRectangle = new Rectangle((int)playerX, (int)playerY, (int)(m_graphics.PreferredBackBufferWidth / 1920f * playerTexture.Width * 1.5f), (int)(m_graphics.PreferredBackBufferHeight / 1080f * playerTexture.Height * 1.5f));
 
             keyboardInput = new KeyboardInput();
-            ball = contentManager.Load<Texture2D>("ball");
 
 
             loadControlsAndHighScores();
@@ -327,19 +326,7 @@ namespace LunarLander
 
             //m_spriteBatch.Draw(ball, new Rectangle((int)playerX - playerRectangle.Width / 2, (int)playerY - playerRectangle.Height / 2, (int)(playerCircle.radius * 2), (int)(playerCircle.radius * 2)), Color.White);
 
-            if (!isCrashed)
-            {
-                m_spriteBatch.Draw(
-                        playerTexture,
-                        new Rectangle((int)playerX, (int)playerY, playerRectangle.Width, playerRectangle.Height),
-                        null, // Drawing the whole texture, not a part
-                        Color.White,
-                        (float)m_level.playerAngle,
-                        new Vector2(playerTexture.Width / 2, playerTexture.Height / 2),
-                        SpriteEffects.None,
-                        0);
-            }
-
+            
             foreach (Line line in m_level.lines)
             {
                 Vector2 start = new Vector2(line.x1, line.y1);
@@ -381,13 +368,13 @@ namespace LunarLander
             m_spriteBatch.Begin();
             float scale = m_graphics.PreferredBackBufferWidth / 1920f;
 
-            Vector2 stringSize1 = m_font.MeasureString("Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s") * scale;
+            Vector2 stringSize1 = m_font.MeasureString(("Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s").PadRight(2)) * scale;
 
 
 
             m_spriteBatch.DrawString(
                            m_font,
-                           "Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s",
+                           ("Fuel   : " + string.Format("{0:0.00}", playerFuel) + " s").PadRight(2),
                            new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
             m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y),
                            playerFuel > 0 ? Color.Green : Color.White,
@@ -398,11 +385,11 @@ namespace LunarLander
                            0);
 
 
-            stringSize1 = m_font.MeasureString("Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s") * scale;
+            stringSize1 = m_font.MeasureString(("Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s").PadRight(2)) * scale;
 
             m_spriteBatch.DrawString(
                           m_font,
-                          "Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s",
+                          ("Speed  : " + string.Format("{0:0.00}", Math.Abs(m_level.playerVectorVelocity.Y)) + " m/s").PadRight(2),
                          new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
             m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + stringSize1.Y),
                           Math.Abs(m_level.playerVectorVelocity.Y) > 2 ? Color.White : Color.Green,
@@ -412,11 +399,12 @@ namespace LunarLander
                           SpriteEffects.None,
                           0);
 
-            stringSize1 = m_font.MeasureString("Angle  : " + string.Format("{0:0.00}", MathHelper.ToDegrees((float)m_level.playerAngle)) + "") * scale;
+
+            stringSize1 = m_font.MeasureString(("Angle  : " + string.Format("{0:0.00}", MathHelper.ToDegrees((float)m_level.playerAngle)) + "").PadRight(2)) * scale;
 
             m_spriteBatch.DrawString(
                           m_font,
-                           "Angle  : " + string.Format("{0:0.00}", MathHelper.ToDegrees((float)m_level.playerAngle)) + "",
+                          ("Angle  : " + string.Format("{0:0.00}", MathHelper.ToDegrees((float)m_level.playerAngle)) + "").PadRight(2),
                           new Vector2(m_graphics.PreferredBackBufferWidth * 0.75f - stringSize1.X / 2,
             m_graphics.PreferredBackBufferHeight / 4f - stringSize1.Y + 2 * stringSize1.Y),
                          MathHelper.ToDegrees((float)m_level.playerAngle) < 5 || MathHelper.ToDegrees((float)m_level.playerAngle) > 355 ? Color.Green : Color.White,
@@ -425,7 +413,18 @@ namespace LunarLander
                           scale,
                           SpriteEffects.None,
                           0);
-
+            if (!isCrashed)
+            {
+                m_spriteBatch.Draw(
+                        playerTexture,
+                        new Rectangle((int)playerX, (int)playerY, playerRectangle.Width, playerRectangle.Height),
+                        null, // Drawing the whole texture, not a part
+                        Color.White,
+                        (float)m_level.playerAngle,
+                        new Vector2(playerTexture.Width / 2, playerTexture.Height / 2),
+                        SpriteEffects.None,
+                        0);
+            }
 
             if (currentStage == Stage.COMPLETED)
             {

@@ -28,7 +28,7 @@ namespace LunarLander
         List<HighScoresState> m_highScores = new List<HighScoresState>();
         public override void loadContent(ContentManager contentManager)
         {
-            m_fontMenu = contentManager.Load<SpriteFont>("Fonts/menu");
+            m_fontMenu = contentManager.Load<SpriteFont>("Fonts/voicActivatedFont");
             backgroundImage = contentManager.Load<Texture2D>("flbb_3udr_220615");
             backgroundRect = new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight);
             whiteBackground = contentManager.Load<Texture2D>("whiteImage");

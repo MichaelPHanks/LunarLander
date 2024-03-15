@@ -82,6 +82,20 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/menu.spritefont
 
+#begin Fonts/selectedVoiceActivatedFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/selectedVoiceActivatedFont.spritefont
+
+#begin Fonts/voicActivatedFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/voicActivatedFont.spritefont
+
 #begin hoverSoundEffect.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

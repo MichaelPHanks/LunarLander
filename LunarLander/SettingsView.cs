@@ -51,8 +51,8 @@ namespace LunarLander
         public override void loadContent(ContentManager contentManager)
         {
             backgroundImage = contentManager.Load<Texture2D>("saturnCool");
-            m_fontMenu = contentManager.Load<SpriteFont>("Fonts/menu");
-            m_fontMenuSelect = contentManager.Load<SpriteFont>("Fonts/menu-selected");
+            m_fontMenu = contentManager.Load<SpriteFont>("Fonts/voicActivatedFont");
+            m_fontMenuSelect = contentManager.Load<SpriteFont>("Fonts/selectedVoiceActivatedFont");
             behindSquare = contentManager.Load<Texture2D>("pixil-frame-0 (6)");
             whiteBackground = contentManager.Load<Texture2D>("whiteImage");
             keyboard = new KeyboardInput();
