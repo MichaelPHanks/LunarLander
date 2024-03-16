@@ -183,7 +183,6 @@ namespace LunarLander
                     }
                     catch (IsolatedStorageException)
                     {
-                        // Ideally show something to the user, but this is demo code :)
                     }
                 }
 

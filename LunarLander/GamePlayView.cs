@@ -25,8 +25,7 @@ namespace LunarLander
         private const float RECTANGLE2_ROTATION_RATE = MathHelper.Pi / 4;  // radians per second
         private Texture2D backgroundImage;
         LunarLanderLevel m_level;
-        private double positionX = 15;
-        private double positionY = 50;
+        
         private Texture2D playerTexture;
         private Rectangle playerRectangle;
         float playerX;
@@ -42,22 +41,18 @@ namespace LunarLander
         private SoundEffect explosionEffect;
         private BasicEffect m_effect;
         private SoundEffect levelClear;
-        private SoundEffectInstance SoundEffectInstance;
         Texture2D t; //base for the line texture
         private KeyControls m_loadedState = null;
         private HighScoresState m_highScoresState = null;
-        private bool saving = false;
         private bool loading = false;
 
         private bool loadKeys = false;
         private bool firstUpdate = false;
-        private bool savedScore = false;
         private Circle playerCircle;
-        private Circle particleCircle;
         
-        private Texture2D ball;
         private bool isCrashed = false;
         
+        private SoundEffectInstance thrustInstance;
 
         TimeSpan timePlayed = TimeSpan.Zero;
 
@@ -67,13 +62,10 @@ namespace LunarLander
         private ParticleSystem m_particleSystemSmoke;
         private ParticleSystemRenderer m_renderFire;
         private ParticleSystemRenderer m_renderSmoke;
+        private bool isThrustUsed = false;
 
-        private Song gamePlaySong;
 
-
-        TimeSpan thrustSoundDuration;
-        TimeSpan thrustDuration;
-
+     
 
         public enum Level
         {
@@ -105,15 +97,13 @@ namespace LunarLander
             m_font = contentManager.Load<SpriteFont>("Fonts/voicActivatedFont");
             playerTexture = contentManager.Load<Texture2D>("rocketShip");
             backgroundImage = contentManager.Load<Texture2D>("saturnCool");
-            thrustSound = contentManager.Load<SoundEffect>("engineThrustSound");
+            thrustSound = contentManager.Load<SoundEffect>("smartsound_TRANSPORTATION_SPACE_Spaceshuttle_Rocket_Full_Power_Steady_01");
             levelClear = contentManager.Load<SoundEffect>("levelClearEffect");
             explosionEffect = contentManager.Load<SoundEffect>("mixkit-arcade-game-explosion-2759");
-            SoundEffectInstance = thrustSound.CreateInstance();
-            SoundEffectInstance.IsLooped = true;
-            thrustSoundDuration = thrustSound.Duration;
-            // Width = 23, Height = 34
+            thrustInstance = thrustSound.CreateInstance();
+            thrustInstance.Volume = 0.25f;
 
-            // m_graphics.PreferredBackBufferWidth / 1980 * 23
+
 
             playerX = m_graphics.PreferredBackBufferWidth / 6;
             playerY = m_graphics.PreferredBackBufferHeight / 8;
@@ -226,7 +216,6 @@ namespace LunarLander
                     }
                     catch (IsolatedStorageException)
                     {
-                        // Ideally show something to the user, but this is demo code :)
                     }
                 }
 
@@ -265,9 +254,17 @@ namespace LunarLander
 
         public override GameStateEnum processInput(GameTime gameTime)
         {
-
+            
             keyboardInput.Update(gameTime);
+            if (!isThrustUsed)
+            {
+                thrustInstance.Pause();
+            }
 
+            if (Keyboard.GetState().IsKeyUp(m_loadedState.Up))
+            {
+                isThrustUsed = false;
+            }
             if (Keyboard.GetState().IsKeyDown(Keys.Escape) && !isESCDown)
             {
                 isPaused = true;
@@ -288,17 +285,14 @@ namespace LunarLander
             
             
 
-            
+            // Reset the thrust vector
             if (!isUpPressed) 
             {
                 m_level.thrustVector.Y = 0;
                 m_level.thrustVector.X = 0;
             }
             isUpPressed = false;
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
-            {
-                //positionY += 1 * gameTime.ElapsedGameTime.TotalMilliseconds;
-            }
+            
             if (isPaused)
             {
                 
@@ -324,8 +318,7 @@ namespace LunarLander
             m_spriteBatch.Draw(backgroundImage, new Rectangle(0, 0, m_graphics.PreferredBackBufferWidth, m_graphics.PreferredBackBufferHeight), currentStage == Stage.PLAYING ? Color.White : Color.Gray);
 
 
-            //m_spriteBatch.Draw(ball, new Rectangle((int)playerX - playerRectangle.Width / 2, (int)playerY - playerRectangle.Height / 2, (int)(playerCircle.radius * 2), (int)(playerCircle.radius * 2)), Color.White);
-
+            // Render the lines
             
             foreach (Line line in m_level.lines)
             {
@@ -355,7 +348,7 @@ namespace LunarLander
 
             m_spriteBatch.End();
 
-            // Render triangle: 
+            // Render triangles: 
             foreach (EffectPass pass in m_effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
@@ -462,7 +455,6 @@ namespace LunarLander
                               SpriteEffects.None,
                               0);
 
-                // Render the time below it...
 
             }
 
@@ -502,14 +494,14 @@ namespace LunarLander
             m_particleSystemFire.update(gameTime);
             m_particleSystemSmoke.update(gameTime);
 
-
+            // If we are 'playing' the game
             if (currentStage == Stage.PLAYING)
             {
                 timePlayed += gameTime.ElapsedGameTime;
 
 
 
-
+                // Reload the keys, if needed
                 if (loadKeys && !firstUpdate)
                 {
                     loadControlsAndHighScores();
@@ -522,7 +514,7 @@ namespace LunarLander
 
                 firstUpdate = false;
 
-                
+                // Checks collision of all lines with the player circle. Applies gravity and thrust vector, if there is no collision.
                 if (!isCollision().Item1)
                 {
                     m_level.playerVectorVelocity +=  m_level.gravityVector * (float)gameTime.ElapsedGameTime.TotalSeconds * 0.5f;
@@ -533,8 +525,11 @@ namespace LunarLander
 
                 }
 
+                // If we collided with something and it is a safe zone
                 else if (isCollision().Item2)
                 {
+                    thrustInstance.Pause();
+
                     currentStage = Stage.COMPLETED;
 
 
@@ -589,8 +584,11 @@ namespace LunarLander
 
                 }
 
+                // If we collided with something and it is not a safe zone.
                 else
                 {
+                    thrustInstance.Pause();
+
                     LEVELOVERMESSAGE = "You're not supposed to do that!";
                     shipBlowup();
                 }
@@ -638,19 +636,13 @@ namespace LunarLander
 
                 if (playerFuel > 0)
                 {
-                    /*thrustDuration -= gameTime.ElapsedGameTime;
-
-                    if (thrustDuration.TotalMilliseconds <= thrustSoundDuration.TotalMilliseconds * 0.25)
+                    isThrustUsed = true;
+                    
+                    if (thrustInstance.State == SoundState.Paused || thrustInstance.State == SoundState.Stopped)
                     {
-                        thrustSound.Play();
-                        thrustDuration = thrustSoundDuration;
-                    }*/
-                    //SoundEffectInstance.Play();
-
-
-
-
-
+                        thrustInstance.Play();
+                    }
+                    
                     // Add 90 to the degrees to get the 'correct' degrees
                     m_particleSystemFire.shipThrust((float)m_level.playerAngle, new Vector2((float)(playerCircle.center.Item1 - playerCircle.radius * Math.Cos(m_level.playerAngle - Math.PI/2)), (float)(playerCircle.center.Item2 - playerCircle.radius * Math.Sin(m_level.playerAngle - Math.PI/2))));
                     m_particleSystemSmoke.shipThrust((float)m_level.playerAngle, new Vector2((float)(playerCircle.center.Item1 - playerCircle.radius * Math.Cos(m_level.playerAngle - Math.PI / 2)), (float)(playerCircle.center.Item2 - playerCircle.radius * Math.Sin(m_level.playerAngle - Math.PI / 2))));
@@ -683,9 +675,12 @@ namespace LunarLander
                 up = newKey;
             }
         }
+        /// <summary>
+        ///     Resets the gameplay without having to remake a gameplayview object.
+        /// </summary>
         public void resetGameplay()
         {
-            // Resets the gameplay without having to remake a gameplayview object.
+            
             timePlayed = TimeSpan.Zero;
             intervalBetweenLevels = TimeSpan.Zero;
             currentLevel = Level.LEVELONE;
@@ -706,6 +701,10 @@ namespace LunarLander
 
         }
 
+        /// <summary>
+        ///     Checks collision of all lines with player circle.
+        /// </summary>
+        /// <returns> Tuple, with Item 1 being if there was a line that collided with player circle. Item 2 is if it is a safe zone.</returns>
         public Tuple<bool, bool> isCollision()
         {
             for (int i = 0; i < m_level.lines.Count; i++)
@@ -777,7 +776,6 @@ namespace LunarLander
                     }
                     catch (IsolatedStorageException)
                     {
-                        // Ideally show something to the user, but this is demo code :)
                     }
                 }
 

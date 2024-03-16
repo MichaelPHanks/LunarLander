@@ -24,16 +24,12 @@ namespace LunarLander
         public Vector2 horizontalVector;
         public Vector2 playerVectorVelocity;
         public double playerAngle;
-        private double playerLocation;
-        private double thrust;
-        private double speedVertical;
-        private double fuel;
+        
 
 
         public List<Line> lines;
 
         private int m_height;
-        private double speedHorizontal { get; set; }
         public LunarLanderLevel(double levelNumber, int width, int height)
         {
 
@@ -246,15 +242,13 @@ namespace LunarLander
                     int midX = (lines[j].x2 + lines[j].x1) / 2;
                     int midYTemp = Math.Abs((lines[j].y2 + lines[j].y1)) / 2;
 
-                    // Get a random number from -25 to 25???
 
                     // X stays the same, y changes.
                     double u1 = 1.0 - random.NextDouble(); //uniform(0,1] random doubles
                     double u2 = 1.0 - random.NextDouble();
                     double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
                                  Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-                    double randNormal =
-                                 0 + randStdNormal * 1;
+                    
 
 
                     
@@ -281,42 +275,10 @@ namespace LunarLander
 
             }
 
-            
-
-
-            
-
-
 
             return lines;
         }
-        public void setSpeedHorizontal(double newSpeed)
-        { 
-            this.speedHorizontal = newSpeed;
-        }
-        public double getSpeedHorizontal()
-        {
-            return speedHorizontal;
-        }
-        public double getSpeedVertical()
-        {
-            return speedVertical;
-        }
-        public double getThurst()
-        {
-            return thrust;
-        }
-        public double getPlayerLocation()
-        {
-            return playerLocation;
-        }
-        public double getPlayerAngle()
-        {
-            return playerAngle;
-        }
-        public double getFuel()
-        {
-            return fuel;
-        }
+        
+        
     }
 }

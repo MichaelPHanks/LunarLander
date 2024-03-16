@@ -21,7 +21,6 @@ namespace LunarLander
         public Keys left = Keys.A;
         public Keys right = Keys.D;
         public GameStateEnum prevState = GameStateEnum.MainMenu;
-        private KeySelection keySelected;
         private Texture2D backgroundImage;
         private SpriteFont m_fontMenu;
         private SpriteFont m_fontMenuSelect;
@@ -30,7 +29,6 @@ namespace LunarLander
         private Rectangle Up = new Rectangle();
         private Rectangle Left = new Rectangle();
         private Rectangle Right = new Rectangle();
-        private Texture2D behindSquare;
         private bool saving = false;
         private bool loading = false;
         private KeyControls m_loadedState = null;
@@ -45,7 +43,6 @@ namespace LunarLander
             None,
         }
         private KeySelection m_currentSelection = KeySelection.Up;
-        private KeySelection m_prevSelection = KeySelection.None;
 
 
         public override void loadContent(ContentManager contentManager)
@@ -53,7 +50,6 @@ namespace LunarLander
             backgroundImage = contentManager.Load<Texture2D>("saturnCool");
             m_fontMenu = contentManager.Load<SpriteFont>("Fonts/voicActivatedFont");
             m_fontMenuSelect = contentManager.Load<SpriteFont>("Fonts/selectedVoiceActivatedFont");
-            behindSquare = contentManager.Load<Texture2D>("pixil-frame-0 (6)");
             whiteBackground = contentManager.Load<Texture2D>("whiteImage");
             keyboard = new KeyboardInput();
 
@@ -341,7 +337,6 @@ namespace LunarLander
                     }
                     catch (IsolatedStorageException)
                     {
-                        // Ideally show something to the user, but this is demo code :)
                     }
                 }
 
@@ -391,7 +386,6 @@ namespace LunarLander
                     }
                     catch (IsolatedStorageException)
                     {
-                        // Ideally show something to the user, but this is demo code :)
                     }
                 }
 

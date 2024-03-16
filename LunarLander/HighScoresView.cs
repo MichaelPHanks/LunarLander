@@ -16,7 +16,6 @@ namespace LunarLander
     public class HighScoresView : GameStateView
     {
 
-        private bool saving = false;
         private bool loading = false;
         private HighScoresState m_loadedState = null;
         private SpriteFont m_fontMenu;
@@ -25,7 +24,6 @@ namespace LunarLander
         private Rectangle backgroundRect;
         private Texture2D whiteBackground;
 
-        List<HighScoresState> m_highScores = new List<HighScoresState>();
         public override void loadContent(ContentManager contentManager)
         {
             m_fontMenu = contentManager.Load<SpriteFont>("Fonts/voicActivatedFont");
@@ -75,7 +73,6 @@ namespace LunarLander
                     }
                     catch (IsolatedStorageException)
                     {
-                        // Ideally show something to the user, but this is demo code :)
                     }
                 }
 

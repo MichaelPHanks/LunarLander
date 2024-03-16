@@ -12,7 +12,6 @@ namespace LunarLander
 {
     public class AboutView : GameStateView
     {
-        // Adding a fun comment to the about view...
         private Texture2D backgroundImage;
         private Rectangle backgroundRect;
         private SpriteFont m_font;
@@ -62,12 +61,10 @@ namespace LunarLander
 
             float bottom = drawMenuItem(m_font, "Credits", m_graphics.PreferredBackBufferHeight / 1080f * 100f, Color.LightGray);
 
-            bottom = drawMenuItem(m_font, "Programming - Miketa", bottom + stringSize2.Y, Color.LightGray);
-            bottom = drawMenuItem(m_font, "Sound Effects - Miketa (Also the internet)", bottom + stringSize2.Y, Color.LightGray);
+            bottom = drawMenuItem(m_font, "Programming - Michael Hanks", bottom + stringSize2.Y, Color.LightGray);
+            bottom = drawMenuItem(m_font, "Sound Effects - Michael Hanks (Also the Internet)", bottom + stringSize2.Y, Color.LightGray);
             bottom = drawMenuItem(m_font, "Images - The Internet", bottom + stringSize2.Y, Color.LightGray);
-            bottom = drawMenuItem(m_font, "Rocket Ship - Miketa (Internet Inspired)", bottom + stringSize2.Y, Color.LightGray);
-            bottom = drawMenuItem(m_font, "I made this game because I had to", bottom + stringSize2.Y, Color.LightGray);
-            bottom = drawMenuItem(m_font, "It was really fun making it tho tbh", bottom + stringSize2.Y, Color.LightGray);
+            bottom = drawMenuItem(m_font, "Rocket Ship - Michael Hanks (Internet Inspired)", bottom + stringSize2.Y, Color.LightGray);
 
 
 
